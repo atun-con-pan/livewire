@@ -10,8 +10,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class FilesCollaborator extends Model implements Auditable
 {
     /** @use HasFactory<\Database\Factories\FilesCollaboratorFactory> */
-    use HasFactory;
-    use AuditableTrait;
+    use HasFactory, AuditableTrait;
 
     protected $fillable = [
         'file_name',

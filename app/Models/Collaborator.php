@@ -10,8 +10,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class Collaborator extends Model implements Auditable
 {
     /** @use HasFactory<\Database\Factories\CollaboratorFactory> */
-    use HasFactory;
-    use AuditableTrait;
+    use HasFactory, AuditableTrait;
 
     protected $fillable = [
         'first_name',

@@ -10,8 +10,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class Contract extends Model implements Auditable
 {
     /** @use HasFactory<\Database\Factories\ContractFactory> */
-    use HasFactory;
-    use AuditableTrait;
+    use HasFactory, AuditableTrait;
 
     protected $fillable = [
         'no_contract',

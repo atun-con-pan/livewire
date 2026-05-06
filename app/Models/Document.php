@@ -10,8 +10,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class Document extends Model implements Auditable
 {
     /** @use HasFactory<\Database\Factories\DocumentFactory> */
-    use HasFactory;
-    use AuditableTrait;
+    use HasFactory, AuditableTrait;
 
     protected $fillable = [
         'type',
