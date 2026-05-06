@@ -58,25 +58,25 @@
             @if ($this->isShow())
                 <flux:input readonly wire:model="form.name" label="Nombre completo" />
             @else
-                <flux:input wire:model="form.name" label="Nombre completo" />
+                <flux:input wire:model="form.name" label="Nombre completo" required />
             @endif
 
             @if ($this->isShow())
                 <flux:input readonly wire:model="form.email" label="Correo electrónico" />
             @else
-                <flux:input wire:model="form.email" label="Correo electrónico" type="email" />
+                <flux:input wire:model="form.email" label="Correo electrónico" type="email" required />
             @endif
 
             @if ($this->isShow())
                 
             @else
-                <flux:input wire:model="form.password" label="Contraseña" type="password" />
+                <flux:input wire:model="form.password" label="Contraseña" type="password" required />
             @endif
 
             @if ($this->isShow())
                 <flux:input readonly wire:model="form.role" label="Rol del usuario" />
             @else
-                <flux:select label="Rol del usuario" name="role" wire:model="form.role">
+                <flux:select label="Rol del usuario" name="role" wire:model="form.role" required>
                     <option value="">Seleccionar el rol del usuario</option>
                     <option value="root">Super usuario</option>
                     <option value="admin">Admininistrador</option>

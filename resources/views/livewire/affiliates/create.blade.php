@@ -42,21 +42,21 @@
         class="space-y-5 w-full p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <flux:input :readonly="($this->isShow())" wire:model="form.name" label="Nombre completo del afiliado" name="name" placeholder="Ingrese el nombre completo" />
-            <flux:input :readonly="($this->isShow())" wire:model="form.dpi" label="DPI" name="dpi" placeholder="Ingrese el DPI" mask="9999-99999-9999" />
+            <flux:input :readonly="($this->isShow())" wire:model="form.name" label="Nombre completo del afiliado" name="name" placeholder="Ingrese el nombre completo" required />
+            <flux:input :readonly="($this->isShow())" wire:model="form.dpi" label="DPI" name="dpi" placeholder="Ingrese el DPI" mask="9999-99999-9999" required />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <flux:input :readonly="($this->isShow())" wire:model="form.no_affiliate" label="No. Afiliado" name="no_affiliate" placeholder="Ingrese el número de afiliado" />
-            <flux:input :readonly="($this->isShow())" wire:model="form.nog" label="NOG del proyecto" name="nog" placeholder="Ingrese el nog del proyecto" />
+            <flux:input :readonly="($this->isShow())" wire:model="form.no_affiliate" label="No. Afiliado" name="no_affiliate" placeholder="Ingrese el número de afiliado" required />
+            <flux:input :readonly="($this->isShow())" wire:model="form.nog" label="NOG del proyecto" name="nog" placeholder="Ingrese el nog del proyecto" required />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <flux:input :readonly="($this->isShow())" type="date" wire:model="form.start_date" label="Fecha de inicio" name="start_date" />
+            <flux:input :readonly="($this->isShow())" type="date" wire:model="form.start_date" label="Fecha de inicio" name="start_date" required />
             <flux:input :readonly="($this->isShow())" type="date" wire:model="form.end_date" label="Fecha de finalización" name="end_date" />
         </div>
         
-        <flux:input :readonly="($this->isShow())" wire:model="form.project" label="Proyecto" name="project" placeholder="Ingrese el nombre del proyecto" />
+        <flux:input :readonly="($this->isShow())" wire:model="form.project" label="Proyecto" name="project" placeholder="Ingrese el nombre del proyecto" required />
             
         <div class="flex justify-end">
             @if ($this->isCreated())

@@ -48,11 +48,11 @@
 
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <flux:input :readonly="($this->isShow())" wire:model="form.nog" label="Nog" name="nog" placeholder="Ingrese el nog" />
+            <flux:input :readonly="($this->isShow())" wire:model="form.nog" label="Nog" name="nog" placeholder="Ingrese el nog" required />
             @if($this->isShow())
                 <flux:input readonly wire:model="form.event" label="Evento" name="event" />
             @else
-                <flux:select wire:model="form.event" label="Evento" name="event">
+                <flux:select wire:model="form.event" label="Evento" name="event" required>
                     <option value="">Seleccione un evento</option>
                     <option value="Licitacion">Licitacion</option>
                     <option value="Cotizacion">Cotizacion</option>
@@ -62,12 +62,12 @@
             @endif
         </div>
 
-        <flux:input :readonly="($this->isShow())" wire:model="form.name" label="Nombre" name="name" placeholder="Ingrese el nombre del proyecto" />
-        <flux:input :readonly="($this->isShow())" wire:model="form.url" label="URL del proyecto" name="url" placeholder="Ingrese la url del proyecto" />
-        <flux:input :readonly="($this->isShow())" wire:model="form.client" label="Entidad contratante" name="client" placeholder="Ingrese la entidad contratante" />
+        <flux:input :readonly="($this->isShow())" wire:model="form.name" label="Nombre" name="name" placeholder="Ingrese el nombre del proyecto" required />
+        <flux:input :readonly="($this->isShow())" wire:model="form.url" label="URL del proyecto" name="url" placeholder="Ingrese la url del proyecto" required />
+        <flux:input :readonly="($this->isShow())" wire:model="form.client" label="Entidad contratante" name="client" placeholder="Ingrese la entidad contratante" required />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <flux:input :readonly="($this->isShow())" wire:model="form.presentation_date" label="Fecha de presentación" name="presentation_date" type="date" />
+            <flux:input :readonly="($this->isShow())" wire:model="form.presentation_date" label="Fecha de presentación" name="presentation_date" type="date" required />
             <flux:input :readonly="($this->isShow())" wire:model="form.start_date" label="Fecha de inicio" name="start_date" type="date" />
             <flux:input :readonly="($this->isShow())" wire:model="form.end_date" label="Fecha de finalización" name="end_date" type="date" />
         </div>
@@ -83,7 +83,7 @@
             @if ($this->isSHow())
                 <flux:input readonly wire:model="form.status" label="Estado" name="status" />
             @else
-                <flux:select wire:model="form.status" label="Estado" name="status">
+                <flux:select wire:model="form.status" label="Estado" name="status" required >
                     <option value="">Seleccione un estado</option>
                     <option value="En curso">En curso</option>
                     <option value="Finalizado">Finalizado</option>

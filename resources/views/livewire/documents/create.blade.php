@@ -46,7 +46,7 @@
             @if ($this->isShow())
                 <flux:input readonly wire:model="form.type" label="Tipo de documento" />
             @else
-                <flux:select label="Tipo de documento" name="type" wire:model="form.type">
+                <flux:select label="Tipo de documento" name="type" wire:model="form.type" required>
                     <option value="">Seleccionar el tipo de documento</option>
                     <option value="Contratos">Contratos</option>
                     <option value="Actas">Actas</option>

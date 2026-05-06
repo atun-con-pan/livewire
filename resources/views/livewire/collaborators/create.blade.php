@@ -46,15 +46,15 @@
         class="space-y-5 w-full p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <flux:input :readonly="($this->isShow())" label="Primer nombre" placeholder="Ingrese el primer nombre" name="first_name" wire:model="form.first_name" />
+            <flux:input :readonly="($this->isShow())" label="Primer nombre" placeholder="Ingrese el primer nombre" name="first_name" wire:model="form.first_name" required />
             <flux:input :readonly="($this->isShow())" label="Segundo nombre" placeholder="Ingrese el segundo nombre" name="middle_name" wire:model="form.middle_name" />
-            <flux:input :readonly="($this->isShow())" label="Primer apellido" placeholder="Ingrese el primer apellido" name="first_surname" wire:model="form.first_surname" />
+            <flux:input :readonly="($this->isShow())" label="Primer apellido" placeholder="Ingrese el primer apellido" name="first_surname" wire:model="form.first_surname" required />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <flux:input :readonly="($this->isShow())" label="Segundo apellido" placeholder="Ingrese el segundo apellido" name="second_last_name" wire:model="form.second_last_name" />
-            <flux:input :readonly="($this->isShow())" mask="9999-99999-9999" label="DPI" placeholder="Ingrese el DPI" name="dpi" wire:model="form.dpi" />
-            <flux:input :readonly="($this->isShow())" label="Fecha de nacimiento" placeholder="Ingrese la fecha de nacimiento" name="birthdate" type="date" wire:model="form.birthdate" />
+            <flux:input :readonly="($this->isShow())" mask="9999-99999-9999" label="DPI" placeholder="Ingrese el DPI" name="dpi" wire:model="form.dpi" required />
+            <flux:input :readonly="($this->isShow())" label="Fecha de nacimiento" placeholder="Ingrese la fecha de nacimiento" name="birthdate" type="date" wire:model="form.birthdate" required />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -62,7 +62,7 @@
                 @if($this->isShow())
                     <flux:input readonly label="Estado civil" name="marital_status" wire:model="form.marital_status" />
                 @else
-                    <flux:select label="Estado civil" name="marital_status" wire:model="form.marital_status">
+                    <flux:select label="Estado civil" name="marital_status" wire:model="form.marital_status" required >
                         <option value="">Seleccione el estado civil</option>
                         <option value="Soltero">Soltero</option>
                         <option value="Casado">Casado</option>
@@ -73,25 +73,25 @@
             </div>
 
             <div class="md:col-span-2">
-                <flux:input :readonly="($this->isShow())" label="Residencia" placeholder="Ingrese la residencia" name="residence" wire:model="form.residence" />
+                <flux:input :readonly="($this->isShow())" label="Residencia" placeholder="Ingrese la residencia" name="residence" wire:model="form.residence" required />
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <flux:input :readonly="($this->isShow())" mask="9999-9999" label="Teléfono" placeholder="Ingrese el teléfono" name="phone" type="tel" wire:model="form.phone" />
+            <flux:input :readonly="($this->isShow())" mask="9999-9999" label="Teléfono" placeholder="Ingrese el teléfono" name="phone" type="tel" wire:model="form.phone" required />
             <flux:input :readonly="($this->isShow())" label="Correo electrónico" placeholder="Ingrese el email" name="email" type="email" wire:model="form.email" />
-            <flux:input :readonly="($this->isShow())" label="Cargo" placeholder="Ingrese el cargo" name="position" wire:model="form.position" />
+            <flux:input :readonly="($this->isShow())" label="Cargo" placeholder="Ingrese el cargo" name="position" wire:model="form.position" required />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <flux:input :readonly="($this->isShow())" label="Fecha de inicio" placeholder="Ingrese la fecha de inicio" name="start_date" type="date" wire:model="form.start_date" />
+            <flux:input :readonly="($this->isShow())" label="Fecha de inicio" placeholder="Ingrese la fecha de inicio" name="start_date" type="date" wire:model="form.start_date" required />
             <flux:input :readonly="($this->isShow())" label="Fecha de terminación" placeholder="Ingrese la fecha de terminación" name="termination_date" type="date" wire:model="form.termination_date" />
 
             <flux:input.group label="Salario">
                 <flux:select class="max-w-fit">
                     <flux:select.option selected>Q</flux:select.option>
                 </flux:select>
-                <flux:input :readonly="($this->isShow())" mask:dynamic="$money($input)" name="salary" placeholder="Ingrese el salario" wire:model="form.salary" />
+                <flux:input :readonly="($this->isShow())" mask:dynamic="$money($input)" name="salary" placeholder="Ingrese el salario" wire:model="form.salary" required />
             </flux:input.group>
         </div>
 
@@ -99,7 +99,7 @@
             @if(request()->routeIs('collaborators.show'))
                 <flux:input readonly label="Tipo de contrato" name="contract" wire:model="form.contract" />
             @else
-                <flux:select label="Tipo de contrato" name="contract" wire:model="form.contract">
+                <flux:select label="Tipo de contrato" name="contract" wire:model="form.contract" required>
                     <option value="">Seleccione el tipo de contrato</option>
                     <option value="Indefinido">Indefinido</option>
                     <option value="Temporal">Temporal</option>
@@ -107,7 +107,7 @@
                 </flux:select>
             @endif
 
-            <flux:input :readonly="($this->isShow())" label="Jefe" placeholder="Ingrese el jefe" name="pattern" wire:model="form.pattern" />
+            <flux:input :readonly="($this->isShow())" label="Jefe" placeholder="Ingrese el jefe" name="pattern" wire:model="form.pattern" required />
             <flux:input :readonly="($this->isShow())" label="Cuenta bancaria" placeholder="Ingrese la cuenta bancaria" name="bank_account" wire:model="form.bank_account" />
         </div>
 
