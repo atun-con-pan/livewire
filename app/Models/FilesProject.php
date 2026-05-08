@@ -14,7 +14,7 @@ class FilesProject extends Model implements Auditable
 
     protected $fillable = [
         'file_name',
-        'path',
+        'file_path',
         'project_id',
     ];
 

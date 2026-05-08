@@ -15,7 +15,7 @@ class FilesContract extends Model implements Auditable
     protected $fillable = [
         'contract_id',
         'file_name',
-        'path',
+        'file_path',
     ];
 
     public function contract()

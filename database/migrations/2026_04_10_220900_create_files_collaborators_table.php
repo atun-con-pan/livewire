@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('files_collaborators', function (Blueprint $table) {
             $table->id();
             $table->string('file_name');
-            $table->string('path');
+            $table->string('file_path');
             $table->foreignId('collaborator_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

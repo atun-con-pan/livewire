@@ -3,6 +3,7 @@
 namespace App\Livewire\Affiliates;
 
 use App\Models\Affiliate;
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -32,7 +33,7 @@ class Index extends Component
 
     public function render()
     {
-        $documents = Affiliate::query()
+        $affiliates = Affiliate::query()
 
             // 🔍 Búsqueda por texto
             ->when($this->search, function ($query) {
@@ -65,6 +66,6 @@ class Index extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.affiliates.index', compact('documents'));
+        return view('livewire.affiliates.index', compact('affiliates'));
     }
 }

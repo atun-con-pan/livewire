@@ -56,7 +56,7 @@
                         <td class="px-4">{{ $documents->firstItem() + $loop->index }}</td>
                         <td class="p-2">{{ $document->type }}</td>
                         <td class="p-2">
-                            <a class="text-info underline" href="{{ asset('storage/' . $document->path) }}" target="_blank">{{ $document->file_name }}</a>
+                            <a class="text-info underline" href="{{ asset('storage/' . $document->file_path) }}" target="_blank">{{ $document->file_name }}</a>
                         </td>
                         <td class="px-4 py-2">
                             <flux:button href="{{ route('documents.show', $document) }}" wire:navigate

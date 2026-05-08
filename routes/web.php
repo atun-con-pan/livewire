@@ -33,6 +33,7 @@ use App\Livewire\Users\Edit as UsersEdit;
 
 use App\Livewire\Affiliates\Index as AffilatesIndex;
 use App\Livewire\Affiliates\Create as AffilatesCreate;
+use App\Livewire\Affiliates\Show as AffilatesShow;
 
 
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index')->middleware('role:root');
     Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create')->middleware('role:root');
+    Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show')->middleware('role:root');
 });
 
 require __DIR__.'/settings.php';

@@ -52,7 +52,7 @@ class File extends Component
             // Guardar en BD
             FilesProject::create([
                 'file_name' => $file_name,
-                'path' => $file_path,
+                'file_path' => $file_path,
                 'project_id' => $this->project->id, // 🔥 clave
             ]);
         }
@@ -69,7 +69,7 @@ class File extends Component
 
     public function delete(FilesProject $file)
     {
-        Storage::disk('public')->delete($file->path);
+        Storage::disk('public')->delete($file->file_path);
         $file->delete();
 
         Flux::toast(

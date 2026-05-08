@@ -14,7 +14,7 @@ class FilesCollaborator extends Model implements Auditable
 
     protected $fillable = [
         'file_name',
-        'path',
+        'file_path',
         'collaborator_id'
     ];
 

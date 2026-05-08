@@ -35,7 +35,7 @@
                     <tr class="border-t">
                         <td class="p-2">{{ $files->firstItem() + $loop->index }}</td>
                         <td class="p-2">
-                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank" class="text-info">{{ $file->file_name }}</a>
+                            <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-info">{{ $file->file_name }}</a>
                         </td>
                         <td class="px-4 nowrap w-1">
                             @auth

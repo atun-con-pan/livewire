@@ -35,16 +35,16 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-outline dark:divide-outline-dark">
-                @forelse ($documents as $document)
+                @forelse ($affiliates as $affiliate)
                     <tr class="border-t">
-                        <td class="px-4">{{ $documents->firstItem() + $loop->index }}</td>
-                        <td class="p-2">{{ $document->name }}</td>
-                        <td class="p-2">{{ $document->dpi }}</td>
-                        <td class="p-2">{{ $document->no_affiliate }}</td>
-                        <td class="p-2">{{ $document->start_date?->format('d/m/Y') }}</td>
-                        <td class="p-2">{{ $document->end_date?->format('d/m/Y') }}</td>
+                        <td class="px-4">{{ $affiliates->firstItem() + $loop->index }}</td>
+                        <td class="p-2">{{ $affiliate->name }}</td>
+                        <td class="p-2">{{ $affiliate->dpi }}</td>
+                        <td class="p-2">{{ $affiliate->no_affiliate }}</td>
+                        <td class="p-2">{{ $affiliate->start_date?->format('d/m/Y') }}</td>
+                        <td class="p-2">{{ $affiliate->end_date?->format('d/m/Y') }}</td>
                         <td class="px-4 py-2">
-                            <flux:button href="{{ route('documents.show', $document) }}" wire:navigate
+                            <flux:button href="{{ route('affiliates.show', $affiliate) }}" wire:navigate
                                 variant="primary" color="emerald" size="sm" icon="exclamation-circle">
                                 Detalles
                             </flux:button>
@@ -61,6 +61,6 @@
 
     <!-- Paginación -->
     <div class="mt-4">
-        {{ $documents->links() }}
+        {{ $affiliates->links() }}
     </div>
 </div>

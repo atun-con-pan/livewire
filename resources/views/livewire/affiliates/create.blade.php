@@ -3,31 +3,22 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 relative pl-4">
             <span class="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 bg-primary rounded"></span>
             @if ($this->isCreated())
-                Crear documento
+                Crear afiliado
             @elseif ($this->isEdit())
-                Editar documento
+                Editar afiliado
             @elseif ($this->isShow())
-                Detalles del documento
+                Detalles del afiliado
             @endif
         </h2>
 
         <div class="flex gap-2">
             @auth
-                @if ($this->isEdit())
-                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
-                        <flux:button onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()" wire:click="delete" variant="danger" size="sm" icon="trash">
-                            Eliminar
-                        </flux:button>
-                    @endif
-                @elseif($this->isShow())
-                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
-                        <flux:button href="{{ route('documents.edit', $document) }}" wire:navigate variant="primary" color="yellow" size="sm" icon="pencil-square">
-                            Editar
-                        </flux:button>
-                    @endif
+                @if ($this->isShow() || $this->isEdit())
+                    <flux:button onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()" wire:click="delete( {{ $affiliate }})" variant="danger" size="sm" icon="trash">
+                        Eliminar
+                    </flux:button>
                 @endif
-
-                <flux:button href="{{ route('documents.index') }}" wire:navigate variant="primary" size="sm" icon="chevron-left">
+                <flux:button href="{{ route('affiliates.index') }}" wire:navigate variant="primary" size="sm" icon="chevron-left">
                     Regresar
                 </flux:button>
             @endauth

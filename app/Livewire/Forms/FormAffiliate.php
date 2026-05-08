@@ -115,4 +115,17 @@ class FormAffiliate extends Form
 
         $this->reset();
     }
+
+    public function setAffiliate(Affiliate $affiliate)
+    {
+        $this->affiliate = $affiliate;
+
+        $this->name = $affiliate->name;
+        $this->dpi = $affiliate->dpi;
+        $this->no_affiliate = $affiliate->no_affiliate;
+        $this->project = $affiliate->project;
+        $this->nog = $affiliate->nog;
+        $this->start_date = $affiliate->start_date?->format('Y-m-d');
+        $this->end_date = $affiliate->end_date?->format('Y-m-d');
+    }
 }

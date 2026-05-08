@@ -15,8 +15,6 @@ class Document extends Model implements Auditable
     protected $fillable = [
         'type',
         'file_name',
-        'path',
+        'file_path',
     ];
 }
-
-// 'Contratos', 'Actas', 'Fianzas', 'Cartas', 'Oficios', 'Planos', 'Facturas', 'Recibos', 'Planillas', 'Cotizaciones', 'Documentos ofertas', 'Informes fotográficos', 'Impuestos', 'Otros'
