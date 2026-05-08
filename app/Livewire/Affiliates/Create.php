@@ -24,19 +24,46 @@ class Create extends Component
         return false;
     }
 
+    /**
+     * Detectar cambios en tiempo real
+     */
+    public function updatedFormDpi()
+    {
+        $this->form->checkConflicts();
+    }
+
+    public function updatedFormNoAffiliate()
+    {
+        $this->form->checkConflicts();
+    }
+
+    public function updatedFormStartDate()
+    {
+        $this->form->checkConflicts();
+    }
+
+    public function updatedFormEndDate()
+    {
+        $this->form->checkConflicts();
+    }
+
+    /**
+     * Guardar
+     */
     public function save()
     {
         $this->form->store();
-        
-        // Verificar si hay errores de validación después del store()
+
         if ($this->getErrorBag()->isNotEmpty()) {
-            // No redirigir, mantener en el formulario para mostrar errores
             return;
         }
-        
-        // Solo redirigir si NO hay errores
+
+        if (!empty($this->form->conflictingAffiliates)) {
+            return;
+        }
+
         $this->redirectRoute('affiliates.index', navigate: true);
-    } 
+    }
 
     public function render()
     {

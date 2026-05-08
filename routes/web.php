@@ -15,11 +15,13 @@ use App\Livewire\Projects\Index as ProjectIndex;
 use App\Livewire\Projects\Create as ProjectCreate;
 use App\Livewire\Projects\Show as ProjectShow;
 use App\Livewire\Projects\Edit as ProjectEdit;
+use App\Livewire\Projects\File as ProjectFile;
 
 use App\Livewire\Contracts\Index as ContractIndex;
 use App\Livewire\Contracts\Create as ContractCreate;
 use App\Livewire\Contracts\Show as ContractShow;
 use App\Livewire\Contracts\Edit as ContractEdit;
+use App\Livewire\Contracts\File as ContractFile;
 
 use App\Livewire\Audit\Index as AuditIndex;
 use App\Livewire\Audit\Show as AuditShow;
@@ -55,11 +57,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('projects/create', ProjectCreate::class)->name('projects.create')->middleware('role:admin,root,user');
     Route::get('projects/show/{project}', ProjectShow::class)->name('projects.show')->middleware('role:admin,root,user');
     Route::get('projects/edit/{project}', ProjectEdit::class)->name('projects.edit')->middleware('role:admin,root');
+    Route::get('projects/{project}/files', ProjectFile::class)->name('projects.file')->middleware('role:admin,root,user');
 
     Route::get('contracts', ContractIndex::class)->name('contracts.index')->middleware('role:admin,root,user');
     Route::get('contracts/create', ContractCreate::class)->name('contracts.create')->middleware('role:admin,root,user');
     Route::get('contracts/show/{contract}', ContractShow::class)->name('contracts.show')->middleware('role:admin,root,user');
     Route::get('contracts/edit/{contract}', ContractEdit::class)->name('contracts.edit')->middleware('role:admin,root');
+    Route::get('contracts/{contract}/files', ContractFile::class)->name('contracts.file')->middleware('role:admin,root,user');
 
     Route::get('audit', AuditIndex::class)->name('audit.index')->middleware('role:root');
     Route::get('audit/show/{audit}', AuditShow::class)->name('audit.show')->middleware('role:root');

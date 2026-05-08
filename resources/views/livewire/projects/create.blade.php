@@ -20,7 +20,7 @@
                         </flux:button>
                     @endif
 
-                    <flux:button href="#" wire:navigate variant="primary" color="green" size="sm" icon="folder">
+                    <flux:button href="{{ route('projects.file', $project) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">
                         Archivos
                     </flux:button>
                 @elseif($this->isEdit())
@@ -33,7 +33,7 @@
                         </flux:button>
                     @endif
 
-                    <flux:button href="#" wire:navigate variant="primary" color="green" size="sm" icon="folder">
+                    <flux:button href="{{ route('projects.file', $project) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">
                         Archivos
                     </flux:button>
                 @endif

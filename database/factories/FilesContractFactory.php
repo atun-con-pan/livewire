@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\FilesCollaborator;
+use App\Models\FilesContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<FilesCollaborator>
+ * @extends Factory<FilesContract>
  */
-class FilesCollaboratorFactory extends Factory
+class FilesContractFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,9 +18,7 @@ class FilesCollaboratorFactory extends Factory
     public function definition(): array
     {
         return [
-            'file_name' => $this->faker->word() . '.txt',
-            'path' => $this->faker->filePath(),
-            'collaborator_id' => 1,
+            //
         ];
     }
 }

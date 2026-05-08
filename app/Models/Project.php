@@ -24,4 +24,9 @@ class Project extends Model implements Auditable
         'price',
         'status'
     ];
+
+    public function files()
+    {
+        return $this->hasMany(FilesProject::class);
+    }
 }

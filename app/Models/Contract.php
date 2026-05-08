@@ -27,4 +27,9 @@ class Contract extends Model implements Auditable
         'filial',
         'person_charge',
     ];
+
+    public function files()
+    {
+        return $this->hasMany(FilesContract::class);
+    }
 }

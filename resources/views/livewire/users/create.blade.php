@@ -70,7 +70,7 @@
             @if ($this->isShow())
                 
             @else
-                <flux:input wire:model="form.password" label="Contraseña" type="password" required />
+                <flux:input wire:model="form.password" label="Contraseña" type="password" />
             @endif
 
             @if ($this->isShow())

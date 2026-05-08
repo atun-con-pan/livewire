@@ -27,9 +27,28 @@
                 @forelse ($users as $user)
                     <tr class="border-t">
                         <td class="px-4">{{ $users->firstItem() + $loop->index }}</td>
-                        <td class="p-2">{{ $user->name }}</td>
+                        <td class="p-2">
+                            <flux:link class="text-info" href="{{ route('users.show', $user) }}">{{ $user->name }}</flux:link>
+                        </td>
                         <td class="p-2">{{ $user->email }}</td>
-                        <td class="p-2">{{ $user->role }}</td>
+                        <td class="p-2">
+                            @switch($user->role)
+                                @case('root')
+                                    <flux:badge rounded icon="user" color="red">Super usuario</flux:badge>
+                                    @break
+
+                                @case('admin')
+                                    <flux:badge rounded icon="user" color="blue">Administrador</flux:badge>
+                                    @break
+
+                                @case('user')
+                                    <flux:badge rounded icon="user" color="gray">Usuario</flux:badge>
+                                    @break
+
+                                @default
+                                    {{ $user->role }}
+                            @endswitch
+                        </td>
                         <td class="px-4 py-2">
                             <flux:button href="{{ route('users.show', $user) }}" wire:navigate
                                 variant="primary" color="emerald" size="sm" icon="exclamation-circle">
@@ -39,7 +58,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center text-gray-500 p-4">No hay registros</td>
+                        <td colspan="5" class="text-center text-gray-500 p-4">No hay registros</td>
                     </tr>
                 @endforelse
             </tbody>

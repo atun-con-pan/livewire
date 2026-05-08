@@ -2,10 +2,10 @@
     <div class="mb-4 flex align-items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 relative pl-4">
             <span class="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 bg-primary rounded"></span>
-            Archivos del colaborador
+            Archivos del contrato
         </h2>
 
-        <flux:button href="{{ route('collaborators.index') }}" wire:navigate variant="primary" size="sm" icon="chevron-left">
+        <flux:button href="{{ route('contracts.index') }}" wire:navigate variant="primary" size="sm" icon="chevron-left">
             Regresar
         </flux:button>
     </div>
@@ -41,7 +41,7 @@
                             @auth
                                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
                                     <flux:button
-                                        onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()"
+                                        onclick="confirm('¿Estás seguro de eliminar este archivo?') || event.stopImmediatePropagation()"
                                         wire:click="delete({{ $file->id }})"
                                         variant="danger" size="sm" icon="trash">
                                         Eliminar

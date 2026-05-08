@@ -12,8 +12,17 @@ class Index extends Component
 
     public $search = '';
 
-    // 🔥 IMPORTANTE: resetear paginación al buscar
+    // 🔥 Nuevo filtro por tipo
+    public $typeFilter = '';
+
+    // Resetear paginación al buscar
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    // Resetear paginación al cambiar filtro
+    public function updatingTypeFilter()
     {
         $this->resetPage();
     }
@@ -21,11 +30,21 @@ class Index extends Component
     public function render()
     {
         $documents = Document::query()
+
+            // 🔍 Buscar por texto
             ->when($this->search, function ($query) {
-                $query->where('file_name', 'like', '%' . $this->search . '%')
+                $query->where(function ($q) {
+                    $q->where('file_name', 'like', '%' . $this->search . '%')
                       ->orWhere('path', 'like', '%' . $this->search . '%')
                       ->orWhere('type', 'like', '%' . $this->search . '%');
+                });
             })
+
+            // 🔥 Filtrar por tipo aunque no haya búsqueda
+            ->when($this->typeFilter, function ($query) {
+                $query->where('type', $this->typeFilter);
+            })
+
             ->latest()
             ->paginate(10);
 

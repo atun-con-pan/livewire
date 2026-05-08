@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Livewire\Collaborators;
+namespace App\Livewire\Contracts;
 
-use App\Models\Collaborator;
-use App\Models\FilesCollaborator;
+use App\Models\Contract;
+use App\Models\FilesContract;
 use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -14,12 +14,12 @@ class File extends Component
 {
     use WithFileUploads, WithPagination;
 
-    public Collaborator $collaborator;
+    public Contract $contract;
     public $file = [];
 
-    public function mount(Collaborator $collaborator)
+    public function mount(Contract $contract)
     {
-        $this->collaborator = $collaborator;
+        $this->contract = $contract;
     }
 
     public function store()
@@ -33,9 +33,9 @@ class File extends Component
 
             $file_name = $uploadedFile->getClientOriginalName();
 
-            // 🔥 Validar duplicado SOLO para este colaborador
-            if (FilesCollaborator::where('file_name', $file_name)
-                ->where('collaborator_id', $this->collaborator->id)
+            // 🔥 Validar duplicado SOLO para este proyecto
+            if (FilesContract::where('file_name', $file_name)
+                ->where('contract_id', $this->contract->id)
                 ->exists()) {
 
                 $this->addError('file', "El archivo '{$file_name}' ya existe.");
@@ -44,16 +44,16 @@ class File extends Component
 
             // Guardar archivo
             $file_path = $uploadedFile->storeAs(
-                'collaborators/' . $this->collaborator->id,
+                'projects/' . $this->contract->id,
                 $file_name,
                 'public'
             );
 
             // Guardar en BD
-            FilesCollaborator::create([
+            FilesContract::create([
                 'file_name' => $file_name,
                 'path' => $file_path,
-                'collaborator_id' => $this->collaborator->id, // 🔥 clave
+                'contract_id' => $this->contract->id, // 🔥 clave
             ]);
         }
 
@@ -67,7 +67,7 @@ class File extends Component
         );
     }
 
-    public function delete(FilesCollaborator $file)
+    public function delete(FilesContract $file)
     {
         Storage::disk('public')->delete($file->path);
         $file->delete();
@@ -79,11 +79,11 @@ class File extends Component
             duration: 3000,
         );
     }
-
+    
     public function render()
     {
-        return view('livewire.collaborators.file', [
-            'files' => FilesCollaborator::latest()->where('collaborator_id', $this->collaborator->id)
+        return view('livewire.contracts.file', [
+            'files' => FilesContract::latest()->where('contract_id', $this->contract->id)
                 ->Paginate(10),
         ]);
     }

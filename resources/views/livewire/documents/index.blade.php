@@ -10,7 +10,35 @@
         <flux:button href="{{ route('documents.create') }}" wire:navigate variant="primary" color="blue" size="sm" icon="plus">Crear registro</flux:button>
     </div>
 
-    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar..." class="mb-4" />
+    
+
+    <div class="flex flex-col md:flex-row gap-4 mb-4">
+
+        {{-- Buscador --}}
+        <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar..." class="mb-4" />
+
+        {{-- Filtro por tipo --}}
+        <div class="w-full md:w-1/3">
+            <flux:select wire:model.live="typeFilter">
+                <option value="">Todos los tipos</option>
+                <option value="Contratos">Contratos</option>
+                <option value="Actas">Actas</option>
+                <option value="Fianzas">Fianzas</option>
+                <option value="Cartas">Cartas</option>
+                <option value="Oficios">Oficios</option>
+                <option value="Planos">Planos</option>
+                <option value="Facturas">Facturas</option>
+                <option value="Recibos">Recibos</option>
+                <option value="Planillas">Planillas</option>
+                <option value="Cotizaciones">Cotizaciones</option>
+                <option value="Documentos ofertas">Documentos ofertas</option>
+                <option value="Informes fotográficos">Informes fotográficos</option>
+                <option value="Impuestos">Impuestos</option>
+                <option value="Otros">Otros</option>
+            </flux:select>
+        </div>
+
+    </div>
 
     <div class="overflow-hidden w-full overflow-x-auto rounded-radius border border-outline dark:border-outline-dark shadow-md">
         <table class="w-full text-left text-sm text-on-surface dark:text-on-surface-dark">
