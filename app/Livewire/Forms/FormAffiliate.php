@@ -27,8 +27,8 @@ class FormAffiliate extends Form
     {
         return [
             'name' => 'required|string|max:255',
-            'dpi' => 'required|string|unique:affiliates,dpi',
-            'no_affiliate' => 'required|string|unique:affiliates,no_affiliate',
+            'dpi' => 'required|string',
+            'no_affiliate' => 'required|string',
             'project' => 'required|string|max:255',
             'nog' => 'required|string|max:255',
             'start_date' => 'required|date|before_or_equal:today',
