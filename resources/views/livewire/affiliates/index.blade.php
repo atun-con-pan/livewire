@@ -14,10 +14,21 @@
 
     <!-- 📅 Filtros de fecha -->
     <div class="flex gap-2 mb-4">
-        <!-- 🔍 Buscador -->
-        <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar por nombre, DPI o afiliación..." class="mb-4" />
+        <flux:input
+            wire:model.live="search"
+            icon="magnifying-glass"
+            placeholder="Buscar por nombre, DPI o afiliación..."
+        />
+
         <flux:input type="date" wire:model.live="start_date" />
+
         <flux:input type="date" wire:model.live="end_date" />
+
+        <flux:select wire:model.live="showConflicts">
+            <option value="all">Todos</option>
+            <option value="conflicted">Solo traslapados</option>
+            <option value="not_conflicted">Solo no traslapados</option>
+        </flux:select>
     </div>
 
     <!-- 📊 Tabla -->
