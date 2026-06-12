@@ -34,6 +34,7 @@ use App\Livewire\Users\Edit as UsersEdit;
 
 use App\Livewire\Affiliates\Index as AffilatesIndex;
 use App\Livewire\Affiliates\Create as AffilatesCreate;
+use App\Livewire\Affiliates\Edit as AffilatesEdit;
 use App\Livewire\Affiliates\Show as AffilatesShow;
 
 
@@ -76,9 +77,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/show/{user:name}', UsersShow::class)->name('users.show')->middleware('role:root');
     Route::get('users/edit/{user}', UsersEdit::class)->name('users.edit')->middleware('role:root');
 
-    Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index')->middleware('role:root');
-    Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create')->middleware('role:root');
-    Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show')->middleware('role:root');
+    Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index')->middleware('role:root,admin');
+    Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create')->middleware('role:root,admin');
+    Route::get('affiliates/edit/{affiliate}', AffilatesEdit::class)->name('affiliates.edit')->middleware('role:root,admin');
+    Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show')->middleware('role:root,admin');
 });
 
 require __DIR__.'/settings.php';

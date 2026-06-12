@@ -13,9 +13,14 @@
 
         <div class="flex gap-2">
             @auth
-                @if ($this->isShow() || $this->isEdit())
+                @if ($this->isEdit())
                     <flux:button onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()" wire:click="delete( {{ $affiliate }})" variant="danger" size="sm" icon="trash">
                         Eliminar
+                    </flux:button>
+                @endif
+                @if ($this->isShow())
+                    <flux:button href="{{ route('affiliates.edit', $affiliate) }}" wire:navigate variant="primary" color="yellow" size="sm" icon="pencil-square">
+                        Editar
                     </flux:button>
                 @endif
                 <flux:button href="{{ route('affiliates.index') }}" wire:navigate variant="primary" size="sm" icon="chevron-left">

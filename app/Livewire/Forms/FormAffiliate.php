@@ -43,7 +43,6 @@ class FormAffiliate extends Form
     {
         $this->conflictingAffiliates = [];
 
-        // Validar datos mínimos
         if (
             empty($this->start_date) ||
             (
@@ -58,23 +57,24 @@ class FormAffiliate extends Form
 
         $conflicts = Affiliate::query()
 
-            ->where(function ($query) {
+            // Excluir el registro actual cuando se está editando
+            ->when($this->affiliate, function ($query) {
+                $query->where('id', '!=', $this->affiliate->id);
+            })
 
+            ->where(function ($query) {
                 $query
                     ->where('dpi', $this->dpi)
                     ->orWhere('no_affiliate', $this->no_affiliate);
-
             })
 
-            // Traslape
+            // Traslape de fechas
             ->whereDate('start_date', '<=', $endDate)
 
             ->where(function ($query) {
-
                 $query
                     ->whereNull('end_date')
                     ->orWhereDate('end_date', '>=', $this->start_date);
-
             })
 
             ->get();
@@ -114,6 +114,51 @@ class FormAffiliate extends Form
         );
 
         $this->reset();
+    }
+
+    public function update()
+    {
+        if (!$this->affiliate) {
+
+            Flux::toast(
+                variant: 'danger',
+                heading: 'Error',
+                text: 'No se encontró el afiliado a actualizar.',
+                duration: 3000
+            );
+
+            return;
+        }
+
+        // Revisar conflictos antes de actualizar
+        $this->checkConflicts();
+
+        if (!empty($this->conflictingAffiliates)) {
+
+            Flux::toast(
+                variant: 'danger',
+                heading: 'Conflicto detectado',
+                text: 'Ya existe un afiliado con fechas traslapadas.',
+                duration: 4000
+            );
+
+            return;
+        }
+
+        $validated = $this->validate();
+
+        $this->affiliate->update($validated);
+
+        Flux::toast(
+            variant: 'success',
+            heading: 'Registro actualizado',
+            text: 'El registro se actualizó exitosamente.',
+            duration: 3000
+        );
+
+        $this->reset();
+
+        $this->affiliate = null;
     }
 
     public function setAffiliate(Affiliate $affiliate)

@@ -29,4 +29,9 @@ class Project extends Model implements Auditable
     {
         return $this->hasMany(FilesProject::class);
     }
+
+    public function ofices()
+    {
+        return $this->hasMany(Ofices::class);
+    }
 }

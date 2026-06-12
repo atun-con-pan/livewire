@@ -26,8 +26,8 @@
 
         <flux:select wire:model.live="showConflicts">
             <option value="all">Todos</option>
-            <option value="conflicted">Solo traslapados</option>
-            <option value="not_conflicted">Solo no traslapados</option>
+            <option value="conflicted">En proyectos</option>
+            <option value="not_conflicted">Disponibles</option>
         </flux:select>
     </div>
 
