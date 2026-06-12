@@ -76,7 +76,10 @@
 
         <div class="flex justify-end">
             @if ($this->isCreated())
-                <flux:button variant="primary" color="blue" icon="bookmark" type="submit">Guardar</flux:button>
+                <flux:button variant="primary" color="blue" icon="bookmark" type="submit" wire:loading.attr="disabled" wire:target="file">Guardar</flux:button>
+                <div wire:loading wire:target="file">
+                    Subiendo archivo...
+                </div>
             @elseif ($this->isEdit())
                 <flux:button variant="primary" color="yellow" icon="pencil-square" type="submit">Editar</flux:button>
             @elseif ($this->isShow())
