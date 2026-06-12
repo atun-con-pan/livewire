@@ -13,6 +13,7 @@ class FilesProject extends Model implements Auditable
     use HasFactory, AuditableTrait;
 
     protected $fillable = [
+        'description',
         'file_name',
         'file_path',
         'project_id',

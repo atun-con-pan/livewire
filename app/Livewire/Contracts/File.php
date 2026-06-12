@@ -32,9 +32,11 @@ class File extends Component
         foreach ($this->file as $uploadedFile) {
 
             $file_name = $uploadedFile->getClientOriginalName();
+            $directory = 'projects/' . $this->contract->id . '/';
+            $file_path = "{$directory}/{$file_name}";
 
             // 🔥 Validar duplicado SOLO para este proyecto
-            if (FilesContract::where('file_name', $file_name)
+            if (FilesContract::where('file_path', $file_path)
                 ->where('contract_id', $this->contract->id)
                 ->exists()) {
 
@@ -43,11 +45,7 @@ class File extends Component
             }
 
             // Guardar archivo
-            $file_path = $uploadedFile->storeAs(
-                'projects/' . $this->contract->id,
-                $file_name,
-                'public'
-            );
+            $uploadedFile->storeAs($directory, $file_name, 'public');
 
             // Guardar en BD
             FilesContract::create([

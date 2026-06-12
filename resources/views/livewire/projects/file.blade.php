@@ -13,6 +13,7 @@
     <form wire:submit="store"
         class="space-y-5 w-full mb-4 p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
+        <flux:input wire:model="description" label="Descripción" name="description" placeholder="Ingrese la descripción del documento" />
         <flux:input type="file" wire:model="file" label="Archivo" multiple />
 
         <div class="flex justify-end">
@@ -26,6 +27,7 @@
             <thead class="border-b border-outline bg-surface-alt text-sm text-on-surface-strong dark:border-outline-dark dark:bg-surface-dark-alt dark:text-on-surface-dark-strong">
                 <tr>
                     <th class="px-4">No</th>
+                    <th class="p-2">Descripción</th>
                     <th class="p-2">Archivo</th>
                     <th class="p-2 text-center">Acciones</th>
                 </tr>
@@ -34,10 +36,11 @@
                 @forelse ($files as $file)
                     <tr class="border-t">
                         <td class="p-2">{{ $files->firstItem() + $loop->index }}</td>
+                        <td class="p-2">{{ $file->description }}</td>
                         <td class="p-2">
                             <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-info">{{ $file->file_name }}</a>
                         </td>
-                        <td class="px-4 nowrap w-1">
+                        <td class="px-4 py-2 nowrap w-1">
                             @auth
                                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
                                     <flux:button

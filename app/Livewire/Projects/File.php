@@ -16,6 +16,7 @@ class File extends Component
 
     public Project $project;
     public $file = [];
+    public $description = '';
 
     public function mount(Project $project)
     {
@@ -25,6 +26,7 @@ class File extends Component
     public function store()
     {
         $this->validate([
+            'description' => 'string|max:255',
             'file' => 'required|array',
             'file.*' => 'file|max:102400',
         ]);
@@ -32,9 +34,11 @@ class File extends Component
         foreach ($this->file as $uploadedFile) {
 
             $file_name = $uploadedFile->getClientOriginalName();
+            $directory = 'projects/' . $this->project->id . '/';
+            $file_path = "{$directory}/{$file_name}";
 
             // 🔥 Validar duplicado SOLO para este proyecto
-            if (FilesProject::where('file_name', $file_name)
+            if (FilesProject::where('file_path', $file_path)
                 ->where('project_id', $this->project->id)
                 ->exists()) {
 
@@ -43,14 +47,11 @@ class File extends Component
             }
 
             // Guardar archivo
-            $file_path = $uploadedFile->storeAs(
-                'projects/' . $this->project->id,
-                $file_name,
-                'public'
-            );
+            $file_path = $uploadedFile->storeAs($directory, $file_name, 'public');
 
             // Guardar en BD
             FilesProject::create([
+                'description' => $this->description,
                 'file_name' => $file_name,
                 'file_path' => $file_path,
                 'project_id' => $this->project->id, // 🔥 clave

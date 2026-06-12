@@ -23,6 +23,10 @@
                     <flux:button href="{{ route('projects.file', $project) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">
                         Archivos
                     </flux:button>
+
+                    <flux:button href="{{ route('projects.ofices', $project) }}" wire:navigate variant="primary" color="blue" size="sm" icon="folder">
+                        Oficios
+                    </flux:button>
                 @elseif($this->isEdit())
                     @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
                         <flux:button
@@ -34,6 +38,10 @@
                     @endif
 
                     <flux:button href="{{ route('projects.file', $project) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">
+                        Archivos
+                    </flux:button>
+
+                    <flux:button href="{{ route('projects.ofices', $project) }}" wire:navigate variant="primary" color="blue" size="sm" icon="folder">
                         Archivos
                     </flux:button>
                 @endif

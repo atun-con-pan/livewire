@@ -16,6 +16,7 @@ use App\Livewire\Projects\Create as ProjectCreate;
 use App\Livewire\Projects\Show as ProjectShow;
 use App\Livewire\Projects\Edit as ProjectEdit;
 use App\Livewire\Projects\File as ProjectFile;
+use App\Livewire\Projects\Ofices as ProjectOfices;
 
 use App\Livewire\Contracts\Index as ContractIndex;
 use App\Livewire\Contracts\Create as ContractCreate;
@@ -51,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('documents', DocumentsIndex::class)->name('documents.index')->middleware('role:admin,root,user');
     Route::get('documents/create', DocumentsCreate::class)->name('documents.create')->middleware('role:admin,root,user');
-    Route::get('documents/show/{document}', DocumentsShow::class)->name('documents.show')->middleware('role:admin,root,user');
+    Route::get('documents/show/{document:file_name}', DocumentsShow::class)->name('documents.show')->middleware('role:admin,root,user');
     Route::get('documents/edit/{document}', DocumentsEdit::class)->name('documents.edit')->middleware('role:admin,root');
 
     Route::get('projects', ProjectIndex::class)->name('projects.index')->middleware('role:admin,root,user');
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('projects/show/{project}', ProjectShow::class)->name('projects.show')->middleware('role:admin,root,user');
     Route::get('projects/edit/{project}', ProjectEdit::class)->name('projects.edit')->middleware('role:admin,root');
     Route::get('projects/{project}/files', ProjectFile::class)->name('projects.file')->middleware('role:admin,root,user');
+    Route::get('projects/{project}/ofices', ProjectOfices::class)->name('projects.ofices')->middleware('role:admin,root,user');
 
     Route::get('contracts', ContractIndex::class)->name('contracts.index')->middleware('role:admin,root,user');
     Route::get('contracts/create', ContractCreate::class)->name('contracts.create')->middleware('role:admin,root,user');
@@ -71,7 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('users', UsersIndex::class)->name('users.index')->middleware('role:root');
     Route::get('users/create', UsersCreate::class)->name('users.create')->middleware('role:root');
-    Route::get('users/show/{user}', UsersShow::class)->name('users.show')->middleware('role:root');
+    Route::get('users/show/{user:name}', UsersShow::class)->name('users.show')->middleware('role:root');
     Route::get('users/edit/{user}', UsersEdit::class)->name('users.edit')->middleware('role:root');
 
     Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index')->middleware('role:root');
