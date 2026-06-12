@@ -39,12 +39,16 @@
                                 Usuarios
                             </flux:sidebar.item>
 
-                            <flux:sidebar.item icon="users" :href="route('affiliates.index')" :current="request()->routeIs('affiliates.*')" wire:navigate>
-                                Afiliados
-                            </flux:sidebar.item>
-
                             <flux:sidebar.item icon="calculator" :href="route('audit.index')" :current="request()->routeIs('audit.*')" wire:navigate>
                                 Auditoría
+                            </flux:sidebar.item>
+                        @endif
+                    @endauth
+
+                    @auth
+                        @if(auth()->user()->role === 'root' || auth()->user()->role === 'admin')
+                            <flux:sidebar.item icon="users" :href="route('affiliates.index')" :current="request()->routeIs('affiliates.*')" wire:navigate>
+                                Afiliados
                             </flux:sidebar.item>
                         @endif
                     @endauth
