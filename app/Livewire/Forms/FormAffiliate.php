@@ -37,6 +37,52 @@ class FormAffiliate extends Form
     }
 
     /**
+     * Buscar afiliados con fechas traslapadas
+     */
+    public function checkConflicts()
+    {
+        $this->conflictingAffiliates = [];
+
+        // Validar datos mínimos
+        if (
+            empty($this->start_date) ||
+            (
+                empty($this->dpi) &&
+                empty($this->no_affiliate)
+            )
+        ) {
+            return;
+        }
+
+        $endDate = $this->end_date ?: now()->toDateString();
+
+        $conflicts = Affiliate::query()
+
+            ->where(function ($query) {
+
+                $query
+                    ->where('dpi', $this->dpi)
+                    ->orWhere('no_affiliate', $this->no_affiliate);
+
+            })
+
+            // Traslape
+            ->whereDate('start_date', '<=', $endDate)
+
+            ->where(function ($query) {
+
+                $query
+                    ->whereNull('end_date')
+                    ->orWhereDate('end_date', '>=', $this->start_date);
+
+            })
+
+            ->get();
+
+        $this->conflictingAffiliates = $conflicts->toArray();
+    }
+
+    /**
      * Guardar
      */
     public function store()
