@@ -10,7 +10,7 @@
         </flux:button>
     </div>
 
-    <form wire:submit="store"
+    <form wire:submit="store" enctype="multipart/form-data"
         class="space-y-5 w-full mb-4 p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
         <flux:input wire:model="description" label="Descripción" name="description" placeholder="Ingrese la descripción del documento" />
