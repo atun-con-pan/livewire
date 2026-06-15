@@ -37,15 +37,13 @@ class Index extends Component
 
         if ($this->start_date && $this->end_date) {
             $conflictedAffiliates = Affiliate::query()
+                ->where('start_date', '<=', $this->end_date)
                 ->where(function ($query) {
-                    $query->where('start_date', '<=', $this->end_date)->where(function ($q) {
-                        $q->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
-                    });
+                    $query->where('end_date', '>=', $this->start_date)
+                        ->orWhereNull('end_date');
                 })
-                ->select('no_affiliate')
-                ->groupBy('no_affiliate')
-                ->havingRaw('COUNT(*) > 0')
-                ->pluck('no_affiliate');
+                ->pluck('no_affiliate')
+                ->unique();
         }
 
         $affiliates = Affiliate::query()
@@ -58,17 +56,23 @@ class Index extends Component
                 });
             })
 
-            ->when($this->showConflicts === 'conflicted', function ($query) use ($conflictedAffiliates) {
-                $query->whereIn('no_affiliate', $conflictedAffiliates)->where(function ($q) {
-                    $q->where('start_date', '<=', $this->end_date)->where(function ($sub) {
-                        $sub->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
-                    });
-                });
-            })
+            ->when(
+                $this->showConflicts === 'conflicted' &&
+                $this->start_date &&
+                $this->end_date,
+                function ($query) use ($conflictedAffiliates) {
+                    $query->whereIn('no_affiliate', $conflictedAffiliates);
+                }
+            )
 
-            ->when($this->showConflicts === 'not_conflicted', function ($query) use ($conflictedAffiliates) {
-                $query->whereNotIn('no_affiliate', $conflictedAffiliates);
-            })
+            ->when(
+                $this->showConflicts === 'not_conflicted' &&
+                $this->start_date &&
+                $this->end_date,
+                function ($query) use ($conflictedAffiliates) {
+                    $query->whereNotIn('no_affiliate', $conflictedAffiliates);
+                }
+            )
 
             ->latest()
             ->paginate(10);
