@@ -35,11 +35,9 @@ class Index extends Component
     {
         $conflictedAffiliates = collect();
 
-        if ($this->start_date) {
-            $searchEndDate = $this->end_date ?: now()->toDateString();
-
+        if ($this->start_date && $this->end_date) {
             $conflictedAffiliates = Affiliate::query()
-                ->whereDate('start_date', '<=', $searchEndDate)
+                ->whereDate('start_date', '<=', $this->end_date)
                 ->where(function ($query) {
                     $query->whereNull('end_date')->orWhereDate('end_date', '>=', $this->start_date);
                 })
@@ -57,11 +55,11 @@ class Index extends Component
                 });
             })
 
-            ->when($this->showConflicts === 'conflicted' && $this->start_date, function ($query) use ($conflictedAffiliates) {
+            ->when($this->showConflicts === 'conflicted' && $this->start_date && $this->end_date, function ($query) use ($conflictedAffiliates) {
                 $query->whereIn('no_affiliate', $conflictedAffiliates);
             })
 
-            ->when($this->showConflicts === 'not_conflicted' && $this->start_date, function ($query) use ($conflictedAffiliates) {
+            ->when($this->showConflicts === 'not_conflicted' && $this->start_date && $this->end_date, function ($query) use ($conflictedAffiliates) {
                 $query->whereNotIn('no_affiliate', $conflictedAffiliates);
             })
 
