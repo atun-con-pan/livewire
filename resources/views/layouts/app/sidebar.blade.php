@@ -17,6 +17,14 @@
                         Dashbaord
                     </flux:sidebar.item>
 
+                    @auth
+                        @if(auth()->user()->role === 'root' || auth()->user()->role === 'admin')
+                            <flux:sidebar.item icon="folder" :href="route('explorer.index')" :current="request()->routeIs('explorer.*')" wire:navigate>
+                                Explorador
+                            </flux:sidebar.item>
+                        @endif
+                    @endauth
+
                     <flux:sidebar.item icon="users" :href="route('collaborators.index')" :current="request()->routeIs('collaborators.*')" wire:navigate>
                         Colaboradores
                     </flux:sidebar.item>

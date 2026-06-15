@@ -76,8 +76,17 @@
 
         <div class="flex justify-end">
             @if ($this->isCreated())
-                <flux:button variant="primary" color="blue" icon="bookmark" type="submit" wire:loading.attr="disabled" wire:target="file">Guardar</flux:button>
-                <div wire:loading wire:target="file">
+                <flux:button
+                    variant="primary"
+                    color="blue"
+                    icon="bookmark"
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    wire:target="form.file,save">
+                    Guardar
+                </flux:button>
+
+                <div wire:loading wire:target="form.file">
                     Subiendo archivo...
                 </div>
             @elseif ($this->isEdit())

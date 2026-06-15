@@ -3,149 +3,136 @@
     @php
         $cards = [
             [
-                'url' => 'https://google.com',
+                'url' => route('affidavits'),
                 'title' => 'Declaraciones Juradas',
                 'desc' => 'Generar declaraciones juradas automáticamente.',
                 'icon' => 'document-text',
             ],
             [
-                'url' => 'https://google.com',
+                'url' => route('authenticates'),
                 'title' => 'Auténticas',
                 'desc' => 'Crear auténticas a partir de plantillas.',
                 'icon' => 'shield-check',
             ],
             [
-                'url' => 'https://google.com',
+                'url' => route('reports'),
                 'title' => 'Reportes Fotográficos',
                 'desc' => 'Generar reportes fotográficos profesionales.',
                 'icon' => 'camera',
             ],
             [
-                'url' => 'https://google.com',
-                'title' => 'Contratos',
+                'url' => route('ilovepdf'),
+                'title' => 'ILovePDF',
+                'desc' => 'Herramientas para documentos PDF.',
+                'icon' => 'folder',
+            ],
+            [
+                'url' => 'https://recit.mintrabajo.gob.gt/login',
+                'title' => 'Contratos Trabajadores',
                 'desc' => 'Gestión y registro de contratos.',
+                'extra' => 'Lucero-2026',
                 'icon' => 'document-duplicate',
             ],
             [
-                'url' => 'https://google.com',
-                'title' => 'Solvencias',
+                'url' => 'https://solvencias.mintrabajo.gob.gt',
+                'title' => 'Solvencias de Trabajo',
                 'desc' => 'Administración de solvencias laborales.',
+                'extra' => '61f4206f-66c',
                 'icon' => 'check-badge',
             ],
             [
-                'url' => 'https://google.com',
+                'url' => 'https://servicios.igssgt.org/login.aspx?ReturnUrl=%2fSistema%2fdefault.aspx',
                 'title' => 'Planillas IGSS',
                 'desc' => 'Control de planillas electrónicas.',
                 'icon' => 'users',
             ],
             [
-                'url' => 'https://google.com',
+                'url' => 'https://sso.minfin.gob.gt/Portal/Default/Credenciales/Login?ReturnUrl=%2f',
                 'title' => 'RGAE',
                 'desc' => 'Registro General de Adquisiciones del Estado.',
+                'extra' => 'Alejandro1991',
                 'icon' => 'building-office',
-            ],
-            [
-                'url' => 'https://google.com',
-                'title' => 'ILovePDF',
-                'desc' => 'Herramientas para documentos PDF.',
-                'icon' => 'folder',
             ],
         ];
     @endphp
 
-    <div class="space-y-8">
+    <div class="space-y-10">
 
         <!-- Encabezado -->
         <div>
-            <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            <h1 class="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 Herramientas
             </h1>
 
-            <p class="mt-2 text-zinc-500 dark:text-zinc-400">
-                Acceso rápido a todas las utilidades del sistema.
+            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                Acceso rápido a todas las herramientas del sistema.
             </p>
         </div>
 
         <!-- Grid -->
-        <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
-            @foreach($cards as $card)
+            @foreach ($cards as $card)
 
                 <a href="{{ $card['url'] }}"
                    target="_blank"
-                   class="group relative overflow-hidden rounded-3xl
-                          bg-white dark:bg-zinc-900
-                          shadow-sm hover:shadow-2xl
-                          ring-1 ring-zinc-200 dark:ring-zinc-800
-                          transition-all duration-300
-                          hover:-translate-y-2">
+                   class="group flex flex-col rounded-2xl border border-zinc-200
+                          bg-white p-6 transition-all duration-200
+                          hover:border-zinc-300 hover:shadow-md
+                          dark:border-zinc-800 dark:bg-zinc-900
+                          dark:hover:border-zinc-700">
 
-                    <!-- Gradiente decorativo -->
-                    <div class="absolute inset-x-0 top-0 h-1
-                                bg-gradient-to-r
-                                from-blue-500
-                                via-cyan-500
-                                to-indigo-500">
+                    <!-- Icono -->
+                    <div class="flex h-12 w-12 items-center justify-center
+                                rounded-xl bg-zinc-100
+                                dark:bg-zinc-800">
+
+                        <flux:icon
+                            name="{{ $card['icon'] }}"
+                            class="size-6 text-zinc-700 dark:text-zinc-300" />
+
                     </div>
 
-                    <div class="p-6">
+                    <!-- Contenido -->
+                    <div class="mt-5 flex-1">
 
-                        <!-- Icono -->
-                        <div
-                            class="flex h-16 w-16 items-center justify-center rounded-2xl
-                                   bg-gradient-to-br
-                                   from-blue-500
-                                   to-indigo-600
-                                   shadow-lg shadow-blue-500/20">
-
-                            <flux:icon
-                                name="{{ $card['icon'] }}"
-                                class="size-8 text-white"
-                            />
-
-                        </div>
-
-                        <!-- Título -->
-                        <h2 class="mt-5 text-xl font-semibold text-zinc-900 dark:text-white">
+                        <h2 class="text-lg font-medium text-zinc-900 dark:text-white">
                             {{ $card['title'] }}
                         </h2>
 
-                        <!-- Descripción -->
-                        <p class="mt-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                        <p class="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
                             {{ $card['desc'] }}
                         </p>
 
-                        <!-- Footer -->
-                        <div class="mt-6 flex items-center justify-between">
+                        @isset($card['extra'])
+                            <div class="mt-3 inline-flex items-center rounded-lg
+                                        bg-zinc-100 px-2.5 py-1 text-xs
+                                        font-medium text-zinc-600
+                                        dark:bg-zinc-800 dark:text-zinc-300">
 
-                            <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                Abrir herramienta
-                            </span>
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full
-                                       bg-zinc-100 dark:bg-zinc-800
-                                       transition-all duration-300
-                                       group-hover:bg-blue-600">
-
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="2"
-                                    stroke="currentColor"
-                                    class="h-4 w-4 text-zinc-600 dark:text-zinc-300
-                                           group-hover:text-white">
-
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                </svg>
+                                Contraseña: {{ $card['extra'] }}
 
                             </div>
+                        @endisset
 
-                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="mt-6 flex items-center justify-between">
+
+                        <span class="text-sm font-medium text-zinc-600
+                                     transition-colors group-hover:text-zinc-900
+                                     dark:text-zinc-400 dark:group-hover:text-white">
+
+                            Abrir
+
+                        </span>
+
+                        <flux:icon
+                            name="arrow-up-right"
+                            class="size-5 text-zinc-400 transition-transform
+                                   duration-200 group-hover:translate-x-0.5
+                                   group-hover:-translate-y-0.5" />
 
                     </div>
 

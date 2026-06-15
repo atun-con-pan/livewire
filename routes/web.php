@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Explorer\Index as FileExplorer;
+
 use App\Livewire\Collaborators\Index as CollaboratorIndex;
 use App\Livewire\Collaborators\Create as CollaboratorCreate;
 use App\Livewire\Collaborators\Edit as CollaboratorEdit;
@@ -44,6 +46,12 @@ Route::view('/', 'livewire.auth.login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard')->middleware('role:admin,root,user');
+    Route::view('authenticates', 'dashboard.authenticates')->name('authenticates')->middleware('role:admin,root,user');
+    Route::view('affidavits', 'dashboard.affidavits')->name('affidavits')->middleware('role:admin,root,user');
+    Route::view('reports', 'dashboard.reports')->name('reports')->middleware('role:admin,root,user');
+    Route::view('ilovepdf', 'dashboard.ilovepdf')->name('ilovepdf')->middleware('role:admin,root,user');
+
+    Route::get('explorer', FileExplorer::class)->name('explorer.index')->middleware('role:root,admin');
 
     Route::get('collaborators', CollaboratorIndex::class)->name('collaborators.index')->middleware('role:admin,root,user');
     Route::get('collaborators/create', CollaboratorCreate::class)->name('collaborators.create')->middleware('role:admin,root,user');

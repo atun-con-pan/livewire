@@ -33,52 +33,41 @@ class Index extends Component
 
     public function render()
     {
+        $conflictedAffiliates = collect();
+
+        if ($this->start_date && $this->end_date) {
+            $conflictedAffiliates = Affiliate::query()
+                ->where(function ($query) {
+                    $query->where('start_date', '<=', $this->end_date)->where(function ($q) {
+                        $q->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
+                    });
+                })
+                ->select('no_affiliate')
+                ->groupBy('no_affiliate')
+                ->havingRaw('COUNT(*) > 0')
+                ->pluck('no_affiliate');
+        }
+
         $affiliates = Affiliate::query()
 
-            // 🔍 Búsqueda por texto
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('dpi', 'like', '%' . $this->search . '%')
-                        ->orWhere('no_affiliate', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('dpi', 'like', "%{$this->search}%")
+                        ->orWhere('no_affiliate', 'like', "%{$this->search}%");
                 });
             })
 
-            // 📅 Solo fecha de inicio
-            ->when($this->start_date && !$this->end_date, function ($query) {
-                if ($this->showConflicts === 'conflicted') {
-                    // Registros activos en esa fecha
-                    $query->where(function ($q) {
-                        $q->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
+            ->when($this->showConflicts === 'conflicted', function ($query) use ($conflictedAffiliates) {
+                $query->whereIn('no_affiliate', $conflictedAffiliates)->where(function ($q) {
+                    $q->where('start_date', '<=', $this->end_date)->where(function ($sub) {
+                        $sub->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
                     });
-                } elseif ($this->showConflicts === 'not_conflicted') {
-                    // Registros NO activos en esa fecha
-                    $query->where(function ($q) {
-                        $q->whereNotNull('end_date')->where('end_date', '<', $this->start_date);
-                    });
-                }
+                });
             })
 
-            // 📅 Rango de fechas
-            ->when($this->start_date && $this->end_date, function ($query) {
-                if ($this->showConflicts === 'conflicted') {
-                    // TRASLAPADOS
-                    $query->where(function ($q) {
-                        $q->where('start_date', '<=', $this->end_date)->where(function ($sub) {
-                            $sub->where('end_date', '>=', $this->start_date)->orWhereNull('end_date');
-                        });
-                    });
-                } elseif ($this->showConflicts === 'not_conflicted') {
-                    // NO TRASLAPADOS
-                    $query->where(function ($q) {
-                        $q->where('start_date', '>', $this->end_date)
-                        ->orWhere(function ($sub) {
-                            $sub->whereNotNull('end_date')->where('end_date', '<', $this->start_date);
-                        });
-                    });
-                }
-
-                // Si es "all" no aplica filtro de fechas
+            ->when($this->showConflicts === 'not_conflicted', function ($query) use ($conflictedAffiliates) {
+                $query->whereNotIn('no_affiliate', $conflictedAffiliates);
             })
 
             ->latest()
