@@ -10,15 +10,15 @@ class FormAffiliate extends Form
 {
     public ?Affiliate $affiliate = null;
 
-    public $name = '';
-    public $dpi = '';
-    public $no_affiliate = '';
-    public $project = '';
-    public $nog = '';
-    public $start_date = '';
-    public $end_date = '';
+    public string $name = '';
+    public string $dpi = '';
+    public string $no_affiliate = '';
+    public string $project = '';
+    public string $nog = '';
+    public string $start_date = '';
+    public ?string $end_date = null;
 
-    public $conflictingAffiliates = [];
+    public array $conflictingAffiliates = [];
 
     /**
      * Reglas
@@ -53,27 +53,27 @@ class FormAffiliate extends Form
             return;
         }
 
+        // Si no tiene fecha final, se considera vigente hasta hoy
         $endDate = $this->end_date ?: now()->toDateString();
 
         $conflicts = Affiliate::query()
 
-            // Excluir el registro actual cuando se está editando
+            // Excluir el registro actual cuando se edita
             ->when($this->affiliate, function ($query) {
                 $query->where('id', '!=', $this->affiliate->id);
             })
 
+            // Buscar por DPI o número de afiliado
             ->where(function ($query) {
-                $query
-                    ->where('dpi', $this->dpi)
+                $query->where('dpi', $this->dpi)
                     ->orWhere('no_affiliate', $this->no_affiliate);
             })
 
-            // Traslape de fechas
+            // Detectar traslape
             ->whereDate('start_date', '<=', $endDate)
 
             ->where(function ($query) {
-                $query
-                    ->whereNull('end_date')
+                $query->whereNull('end_date')
                     ->orWhereDate('end_date', '>=', $this->start_date);
             })
 
@@ -104,6 +104,11 @@ class FormAffiliate extends Form
 
         $validated = $this->validate();
 
+        // Convertir cadena vacía a NULL
+        $validated['end_date'] = !empty($validated['end_date'])
+            ? $validated['end_date']
+            : null;
+
         Affiliate::create($validated);
 
         Flux::toast(
@@ -113,9 +118,12 @@ class FormAffiliate extends Form
             duration: 3000
         );
 
-        $this->reset();
+        $this->resetForm();
     }
 
+    /**
+     * Actualizar
+     */
     public function update()
     {
         if (!$this->affiliate) {
@@ -147,6 +155,11 @@ class FormAffiliate extends Form
 
         $validated = $this->validate();
 
+        // Convertir cadena vacía a NULL
+        $validated['end_date'] = !empty($validated['end_date'])
+            ? $validated['end_date']
+            : null;
+
         $this->affiliate->update($validated);
 
         Flux::toast(
@@ -156,11 +169,12 @@ class FormAffiliate extends Form
             duration: 3000
         );
 
-        $this->reset();
-
-        $this->affiliate = null;
+        $this->resetForm();
     }
 
+    /**
+     * Cargar afiliado para editar o ver
+     */
     public function setAffiliate(Affiliate $affiliate)
     {
         $this->affiliate = $affiliate;
@@ -170,7 +184,34 @@ class FormAffiliate extends Form
         $this->no_affiliate = $affiliate->no_affiliate;
         $this->project = $affiliate->project;
         $this->nog = $affiliate->nog;
-        $this->start_date = $affiliate->start_date?->format('Y-m-d');
-        $this->end_date = $affiliate->end_date?->format('Y-m-d');
+
+        $this->start_date = $affiliate->start_date
+            ? $affiliate->start_date->format('Y-m-d')
+            : '';
+
+        $this->end_date = $affiliate->end_date
+            ? $affiliate->end_date->format('Y-m-d')
+            : null;
+    }
+
+    /**
+     * Reiniciar formulario
+     */
+    public function resetForm()
+    {
+        $this->reset([
+            'name',
+            'dpi',
+            'no_affiliate',
+            'project',
+            'nog',
+            'start_date',
+            'end_date',
+            'conflictingAffiliates',
+        ]);
+
+        $this->affiliate = null;
+
+        $this->end_date = null;
     }
 }
