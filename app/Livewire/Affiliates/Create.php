@@ -25,29 +25,6 @@ class Create extends Component
     }
 
     /**
-     * Detectar cambios en tiempo real
-     */
-    public function updatedFormDpi()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormNoAffiliate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormStartDate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormEndDate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    /**
      * Guardar
      */
     public function save()
@@ -55,10 +32,6 @@ class Create extends Component
         $this->form->store();
 
         if ($this->getErrorBag()->isNotEmpty()) {
-            return;
-        }
-
-        if (!empty($this->form->conflictingAffiliates)) {
             return;
         }
 

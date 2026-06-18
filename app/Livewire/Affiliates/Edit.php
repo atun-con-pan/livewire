@@ -33,29 +33,6 @@ class Edit extends Component
     }
 
     /**
-     * Detectar cambios en tiempo real
-     */
-    public function updatedFormDpi()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormNoAffiliate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormStartDate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    public function updatedFormEndDate()
-    {
-        $this->form->checkConflicts();
-    }
-
-    /**
      * Guardar
      */
     public function save()
@@ -63,10 +40,6 @@ class Edit extends Component
         $this->form->update();
 
         if ($this->getErrorBag()->isNotEmpty()) {
-            return;
-        }
-
-        if (!empty($this->form->conflictingAffiliates)) {
             return;
         }
 
@@ -79,14 +52,9 @@ class Edit extends Component
 
         $this->redirectRoute('affiliates.index', navigate: true);
 
-        Flux::toast(
-            variant: 'danger',
-            heading: 'Registro Eliminado.',
-            text: "El registro se ha eliminado exitosamente.",
-            duration: 3000,
-        );
+        Flux::toast(variant: 'danger', heading: 'Registro Eliminado.', text: 'El registro se ha eliminado exitosamente.', duration: 3000);
     }
-    
+
     public function render()
     {
         return view('livewire.affiliates.create');

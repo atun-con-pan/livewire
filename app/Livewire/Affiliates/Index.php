@@ -33,37 +33,38 @@ class Index extends Component
 
     public function render()
     {
-        $conflictedAffiliates = collect();
-
-        if ($this->start_date && $this->end_date) {
-            $conflictedAffiliates = Affiliate::query()
-                ->whereDate('start_date', '<=', $this->end_date)
-                ->where(function ($query) {
-                    $query->whereNull('end_date')->orWhereDate('end_date', '>=', $this->start_date);
-                })
-                ->pluck('no_affiliate')
-                ->unique();
-        }
-
         $affiliates = Affiliate::query()
 
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', "%{$this->search}%")
+            ->when($this->search, function ($q) {
+                $q->where(function ($s) {
+                    $s->where('name', 'like', "%{$this->search}%")
                         ->orWhere('dpi', 'like', "%{$this->search}%")
                         ->orWhere('no_affiliate', 'like', "%{$this->search}%");
                 });
             })
 
-            ->when($this->showConflicts === 'conflicted' && $this->start_date && $this->end_date, function ($query) use ($conflictedAffiliates) {
-                $query->whereIn('no_affiliate', $conflictedAffiliates);
+            // 🔥 FILTRO DE ESTADO
+            ->when($this->showConflicts !== 'all', function ($q) {
+                $start = $this->start_date ?? now()->toDateString();
+                $end = $this->end_date ?: $start;
+
+                $q->where(function ($sub) use ($start, $end) {
+                    if ($this->showConflicts === 'conflicted') {
+                        $sub->whereHas('periods', function ($p) use ($start, $end) {
+                            $p->whereDate('start_date', '<=', $end)->where(function ($x) use ($start) {
+                                $x->whereNull('end_date')->orWhereDate('end_date', '>=', $start);
+                            });
+                        });
+                    } elseif ($this->showConflicts === 'not_conflicted') {
+                        $sub->whereDoesntHave('periods', function ($p) use ($start, $end) {
+                            $p->whereDate('start_date', '<=', $end)->where(function ($x) use ($start) {
+                                $x->whereNull('end_date')->orWhereDate('end_date', '>=', $start);
+                            });
+                        });
+                    }
+                });
             })
 
-            ->when($this->showConflicts === 'not_conflicted' && $this->start_date && $this->end_date, function ($query) use ($conflictedAffiliates) {
-                $query->whereNotIn('no_affiliate', $conflictedAffiliates);
-            })
-
-            ->latest()
             ->paginate(10);
 
         return view('livewire.affiliates.index', compact('affiliates'));

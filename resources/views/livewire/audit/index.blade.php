@@ -6,7 +6,7 @@
     </h2>
     
     <!-- Buscador -->
-    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar..." class="mb-4" />
+    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar ..." class="mb-4" />
     
     <!-- Tabla -->
     <div class="overflow-hidden w-full overflow-x-auto rounded-radius border border-outline dark:border-outline-dark shadow-md">

@@ -10,7 +10,7 @@
         <flux:button href="{{ route('contracts.create') }}" wire:navigate variant="primary" color="blue" size="sm" icon="plus">Crear registro</flux:button>
     </div>
 
-    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar..." class="mb-4" />
+    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar contrato ..." class="mb-4" />
 
     <div class="overflow-hidden w-full overflow-x-auto rounded-radius border border-outline dark:border-outline-dark shadow-md">
         <table class="w-full text-left text-sm text-on-surface dark:text-on-surface-dark">

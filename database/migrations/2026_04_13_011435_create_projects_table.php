@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->text('nog')->unique();
+            $table->string('nog')->unique();
             $table->string('event');
-            $table->text('name');
+            $table->string('name');
             $table->string('url')->nullable();
-            $table->text('client');
+            $table->string('client');
             $table->date('presentation_date');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('price');
+            $table->decimal('price', 15, 2);
             $table->string('status');
             $table->timestamps();
         });

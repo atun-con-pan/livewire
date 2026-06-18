@@ -15,7 +15,7 @@
     <div class="flex flex-col md:flex-row gap-4">
 
         {{-- Buscador --}}
-        <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar..." class="mb-4" />
+        <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar documento ..." class="mb-4" />
 
         {{-- Filtro por tipo --}}
         <div class="w-full md:w-1/3">

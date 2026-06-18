@@ -39,6 +39,10 @@ use App\Livewire\Affiliates\Create as AffilatesCreate;
 use App\Livewire\Affiliates\Edit as AffilatesEdit;
 use App\Livewire\Affiliates\Show as AffilatesShow;
 
+use App\Livewire\AffiliatePeriods\Index as AffiliatePeriodsIndex;
+use App\Livewire\AffiliatePeriods\Create as AffiliatePeriodsCreate;
+use App\Livewire\AffiliatePeriods\Edit as AffiliatePeriodsEdit;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('affidavits', 'dashboard.affidavits')->name('affidavits')->middleware('role:admin,root,user');
     Route::view('reports', 'dashboard.reports')->name('reports')->middleware('role:admin,root,user');
     Route::view('ilovepdf', 'dashboard.ilovepdf')->name('ilovepdf')->middleware('role:admin,root,user');
+    Route::view('invoices', 'dashboard.invoices')->name('invoices')->middleware('role:admin,root,user');
 
     Route::get('explorer', FileExplorer::class)->name('explorer.index')->middleware('role:root,admin');
 
@@ -89,6 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create')->middleware('role:admin,root,user');
     Route::get('affiliates/edit/{affiliate}', AffilatesEdit::class)->name('affiliates.edit')->middleware('role:admin,root,user');
     Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show')->middleware('role:admin,root,user');
+
+    Route::get('periods', AffiliatePeriodsIndex::class)->name('periods.index')->middleware('role:admin,root');
+    Route::get('periods/create', AffiliatePeriodsCreate::class)->name('periods.create')->middleware('role:admin,root');
+    Route::get('periods/edit/{period}', AffiliatePeriodsEdit::class)->name('periods.edit')->middleware('role:admin,root');
 });
 
 require __DIR__.'/settings.php';

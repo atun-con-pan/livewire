@@ -28,18 +28,22 @@ class FormProject extends Form
 
         Project::create($validated);
 
-        Flux::toast(
-            variant: 'success',
-            heading: 'Registro Creado.',
-            text: "El registro se ha creado exitosamente.",
-            duration: 3000
-        );
+        Flux::toast(variant: 'success', heading: 'Registro Creado.', text: 'El registro se ha creado exitosamente.', duration: 3000);
     }
 
     public function setProject(Project $project)
     {
         $this->project = $project;
-        $this->fill($project->toArray());
+        $this->nog = $project->nog;
+        $this->event = $project->event;
+        $this->name = $project->name;
+        $this->url = $project->url;
+        $this->client = $project->client;
+        $this->presentation_date = $project->presentation_date ? $project->presentation_date->format('Y-m-d') : null;
+        $this->start_date = $project->start_date ? $project->start_date->format('Y-m-d') : null;
+        $this->end_date = $project->end_date ? $project->end_date->format('Y-m-d') : null;
+        $this->price = $project->price;
+        $this->status = $project->status;
     }
 
     public function update()
@@ -59,11 +63,6 @@ class FormProject extends Form
 
         $this->project->fill($validated)->save();
 
-        Flux::toast(
-            variant: 'warning',
-            heading: 'Registro Editado.',
-            text: "El registro se ha editado exitosamente.",
-            duration: 3000
-        );
+        Flux::toast(variant: 'warning', heading: 'Registro Editado.', text: 'El registro se ha editado exitosamente.', duration: 3000);
     }
 }
