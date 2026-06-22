@@ -26,7 +26,7 @@
                 @elseif($this->isEdit())
                     @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
                         <flux:button
-                            wire:confirm.prompt="¿Estás seguro de eliminar este colaborador?\n\nEscribe DELETE para confirmar|DELETE"
+                            onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()"
                             wire:click="delete"
                             variant="danger" size="sm" icon="trash">
                             Eliminar

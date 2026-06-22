@@ -25,9 +25,12 @@
                     </flux:button>
                 @elseif($this->isEdit())
                     @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
-                        <flux:button onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()" wire:click="delete" variant="danger" size="sm" icon="trash">
+                        <flux:button
+                            onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()"
+                            wire:click="delete"
+                            variant="danger" size="sm" icon="trash">
                             Eliminar
-                        </flux:button>
+                        </flux:buttononclick=>
                     @endif
                 
                     <flux:button href="{{ route('collaborators.file', $collaborator) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">

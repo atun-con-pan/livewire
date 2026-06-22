@@ -4,6 +4,7 @@ namespace App\Livewire\Collaborators;
 
 use App\Livewire\Forms\FormCollaborator;
 use App\Models\Collaborator;
+use Flux\Flux;
 use Livewire\Component;
 
 class Edit extends Component
@@ -36,6 +37,15 @@ class Edit extends Component
     {
         $this->form->update();
         $this->redirectRoute('collaborators.index', navigate: true);
+    }
+
+    public function delete()
+    {
+        $this->collaborator->delete();
+
+        $this->redirectRoute('collaborators.index', navigate: true);
+
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
 
     public function render()
