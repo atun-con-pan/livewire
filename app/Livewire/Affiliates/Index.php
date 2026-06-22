@@ -38,7 +38,6 @@ class Index extends Component
             ->when($this->search, function ($q) {
                 $q->where(function ($s) {
                     $s->where('name', 'like', "%{$this->search}%")
-                        ->orWhere('dpi', 'like', "%{$this->search}%")
                         ->orWhere('no_affiliate', 'like', "%{$this->search}%");
                 });
             })
@@ -64,7 +63,7 @@ class Index extends Component
                     }
                 });
             })
-
+            ->latest()
             ->paginate(10);
 
         return view('livewire.affiliates.index', compact('affiliates'));

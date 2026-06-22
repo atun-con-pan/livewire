@@ -32,6 +32,11 @@ class Edit extends Component
         $this->form->setAffiliate($affiliate);
     }
 
+    public function updatedFormNoAffiliate()
+    {
+        $this->validateOnly('form.no_affiliate');
+    }
+
     /**
      * Guardar
      */

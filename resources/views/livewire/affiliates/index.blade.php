@@ -23,7 +23,7 @@
     <div class="flex flex-col md:flex-row gap-2 mb-4">
 
         <flux:input wire:model.live="search" icon="magnifying-glass"
-            placeholder="Buscar por nombre, DPI o afiliación ..." />
+            placeholder="Buscar por nombre o número de afiliación ..." />
 
         <flux:input type="date" wire:model.live="start_date" />
 
@@ -50,7 +50,6 @@
                     <tr>
                         <th class="px-4">No</th>
                         <th class="p-2">Nombre</th>
-                        <th class="p-2">DPI</th>
                         <th class="p-2">No. Afiliado</th>
 
                         @if ($start_date && $end_date)
@@ -72,10 +71,6 @@
 
                             <td class="p-2">
                                 {{ $affiliate->name }}
-                            </td>
-
-                            <td class="p-2">
-                                {{ $affiliate->dpi }}
                             </td>
 
                             <td class="p-2">
@@ -161,16 +156,6 @@
                         @endif
                     @endif
 
-                </div>
-
-                <div class="mt-3">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                        DPI
-                    </p>
-
-                    <p class="text-sm">
-                        {{ $affiliate->dpi }}
-                    </p>
                 </div>
 
                 <div class="mt-3">

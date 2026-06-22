@@ -13,7 +13,7 @@ class Affiliate extends Model implements Auditable
 {
     use HasFactory, AuditableTrait;
 
-    protected $fillable = ['name', 'dpi', 'no_affiliate'];
+    protected $fillable = ['name', 'no_affiliate'];
 
     public function periods()
     {

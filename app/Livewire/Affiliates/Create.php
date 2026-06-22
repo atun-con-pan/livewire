@@ -24,6 +24,11 @@ class Create extends Component
         return false;
     }
 
+    public function updatedFormNoAffiliate()
+    {
+        $this->validateOnly('form.no_affiliate');
+    }
+
     /**
      * Guardar
      */

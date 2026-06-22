@@ -12,7 +12,6 @@ class FormAffiliate extends Form
     public ?Affiliate $affiliate = null;
 
     public string $name = '';
-    public string $dpi = '';
     public string $no_affiliate = '';
 
     /**
@@ -23,9 +22,14 @@ class FormAffiliate extends Form
         return [
             'name' => ['required', 'string', 'max:255'],
 
-            'dpi' => ['required', 'string', Rule::unique('affiliates', 'dpi')->ignore($this->affiliate?->id)],
-
             'no_affiliate' => ['required', 'string', Rule::unique('affiliates', 'no_affiliate')->ignore($this->affiliate?->id)],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'no_affiliate.unique' => 'Ya existe un afiliado con este número de afiliación.',
         ];
     }
 
@@ -71,7 +75,6 @@ class FormAffiliate extends Form
         $this->affiliate = $affiliate;
 
         $this->name = $affiliate->name;
-        $this->dpi = $affiliate->dpi;
         $this->no_affiliate = $affiliate->no_affiliate;
     }
 
@@ -80,7 +83,7 @@ class FormAffiliate extends Form
      */
     public function resetForm()
     {
-        $this->reset(['name', 'dpi', 'no_affiliate']);
+        $this->reset(['name', 'no_affiliate']);
 
         $this->affiliate = null;
     }

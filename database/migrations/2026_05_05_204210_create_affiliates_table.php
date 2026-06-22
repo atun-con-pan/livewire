@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('affiliates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('dpi')->unique();
             $table->string('no_affiliate')->unique();
             $table->timestamps();
         });
