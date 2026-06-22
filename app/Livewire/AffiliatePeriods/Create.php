@@ -26,6 +26,17 @@ class Create extends Component
         return false;
     }
 
+    public string $affiliateSearch = '';
+
+public function getFilteredAffiliatesProperty()
+{
+    return Affiliate::query()
+        ->where('name', 'like', "%{$this->affiliateSearch}%")
+        ->orWhere('no_affiliate', 'like', "%{$this->affiliateSearch}%")
+        ->limit(10)
+        ->get();
+}
+
     public function save()
     {
         $ok = $this->form->store();
