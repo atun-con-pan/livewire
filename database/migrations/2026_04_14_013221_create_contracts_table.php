@@ -13,18 +13,13 @@ return new class extends Migration
     {
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
-            $table->string('no_contract');
+            $table->foreignId('project_id')->unique()->constrained()->onDelete('cascade');
             $table->date('contract_registration_date');
-            $table->date('contract_subscription_date');
-            $table->date('start_date_activities');
-            $table->date('final_date_activities')->nullable();
-            $table->string('nog_contract')->unique();
-            $table->string('contract_name');
-            $table->string('execution_address');
-            $table->string('number_workers');
+            $table->string('no_contract');
+            $table->integer('number_workers');
             $table->string('salary_amount');
-            $table->string('status');
             $table->string('filial');
+            $table->string('status');
             $table->string('person_charge');
             $table->timestamps();
         });

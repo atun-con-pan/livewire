@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Contract extends Model implements Auditable
 {
@@ -13,6 +14,7 @@ class Contract extends Model implements Auditable
     use HasFactory, AuditableTrait;
 
     protected $fillable = [
+        'project_id',
         'no_contract',
         'contract_registration_date',
         'contract_subscription_date',
@@ -31,5 +33,10 @@ class Contract extends Model implements Auditable
     public function files()
     {
         return $this->hasMany(FilesContract::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Livewire\Documents;
 
 use App\Livewire\Forms\FormDocument;
 use App\Models\Document;
+use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -50,6 +51,8 @@ class Edit extends Component
         $this->document->delete();
 
         $this->redirectRoute('documents.index', navigate: true);
+
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
 
     public function render()

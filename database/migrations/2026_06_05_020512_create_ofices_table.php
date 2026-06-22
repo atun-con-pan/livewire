@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('ofices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('project_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->string('ofice');
             $table->string('option');

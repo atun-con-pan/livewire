@@ -4,6 +4,7 @@ namespace App\Livewire\Contracts;
 
 use App\Livewire\Forms\FormContract;
 use App\Models\Contract;
+use App\Models\Project;
 use Livewire\Component;
 
 class Show extends Component
@@ -33,6 +34,8 @@ class Show extends Component
 
     public function render()
     {
-        return view('livewire.contracts.create');
+        $projects = Project::orderBy('name')->get();
+        
+        return view('livewire.contracts.create', compact('projects'));
     }
 }

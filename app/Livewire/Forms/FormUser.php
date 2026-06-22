@@ -23,12 +23,7 @@ class FormUser extends Form
 
         User::create($validated);
 
-        Flux::toast(
-            variant: 'success',
-            heading: 'Registro Creado.',
-            text: "El registro se ha creado exitosamente.",
-            duration: 3000
-        );
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
     }
 
     public function setUser(User $user)
@@ -56,11 +51,6 @@ class FormUser extends Form
 
         $this->user->fill($validated)->save();
 
-        Flux::toast(
-            variant: 'warning',
-            heading: 'Registro Editado.',
-            text: "El registro se ha editado exitosamente.",
-            duration: 3000
-        );
+        Flux::toast(variant: 'success', text: 'Registro editado correctamente');
     }
 }

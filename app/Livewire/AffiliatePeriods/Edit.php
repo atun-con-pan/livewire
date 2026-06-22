@@ -49,7 +49,7 @@ class Edit extends Component
     {
         $this->period->delete();
         $this->redirectRoute('periods.index', navigate: true);
-        Flux::toast(variant: 'danger', heading: 'Registro Eliminado.', text: 'El registro se ha eliminado exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
 
     public function render()

@@ -48,56 +48,62 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'livewire.auth.login')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard')->middleware('role:admin,root,user');
-    Route::view('authenticates', 'dashboard.authenticates')->name('authenticates')->middleware('role:admin,root,user');
-    Route::view('affidavits', 'dashboard.affidavits')->name('affidavits')->middleware('role:admin,root,user');
-    Route::view('reports', 'dashboard.reports')->name('reports')->middleware('role:admin,root,user');
-    Route::view('ilovepdf', 'dashboard.ilovepdf')->name('ilovepdf')->middleware('role:admin,root,user');
-    Route::view('invoices', 'dashboard.invoices')->name('invoices')->middleware('role:admin,root,user');
+Route::middleware(['auth', 'verified', 'throttle:50,1', 'role:admin,root,user'])->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::view('authenticates', 'dashboard.authenticates')->name('authenticates');
+    Route::view('affidavits', 'dashboard.affidavits')->name('affidavits');
+    Route::view('reports', 'dashboard.reports')->name('reports');
+    Route::view('ilovepdf', 'dashboard.ilovepdf')->name('ilovepdf');
+    Route::view('invoices', 'dashboard.invoices')->name('invoices');
 
-    Route::get('explorer', FileExplorer::class)->name('explorer.index')->middleware('role:root,admin');
+    Route::get('collaborators', CollaboratorIndex::class)->name('collaborators.index');
+    Route::get('collaborators/create', CollaboratorCreate::class)->name('collaborators.create');
+    Route::get('collaborators/show/{collaborator}', CollaboratorShow::class)->name('collaborators.show');
+    Route::get('collaborators/{collaborator}/files', CollaboratorFile::class)->name('collaborators.file');
 
-    Route::get('collaborators', CollaboratorIndex::class)->name('collaborators.index')->middleware('role:admin,root,user');
-    Route::get('collaborators/create', CollaboratorCreate::class)->name('collaborators.create')->middleware('role:admin,root,user');
-    Route::get('collaborators/edit/{collaborator}', CollaboratorEdit::class)->name('collaborators.edit')->middleware('role:admin,root');
-    Route::get('collaborators/show/{collaborator}', CollaboratorShow::class)->name('collaborators.show')->middleware('role:admin,root,user');
-    Route::get('collaborators/{collaborator}/files', CollaboratorFile::class)->name('collaborators.file')->middleware('role:admin,root,user');
+    Route::get('documents', DocumentsIndex::class)->name('documents.index');
+    Route::get('documents/create', DocumentsCreate::class)->name('documents.create');
+    Route::get('documents/show/{document:file_name}', DocumentsShow::class)->name('documents.show');
 
-    Route::get('documents', DocumentsIndex::class)->name('documents.index')->middleware('role:admin,root,user');
-    Route::get('documents/create', DocumentsCreate::class)->name('documents.create')->middleware('role:admin,root,user');
-    Route::get('documents/show/{document:file_name}', DocumentsShow::class)->name('documents.show')->middleware('role:admin,root,user');
-    Route::get('documents/edit/{document}', DocumentsEdit::class)->name('documents.edit')->middleware('role:admin,root');
+    Route::get('projects', ProjectIndex::class)->name('projects.index');
+    Route::get('projects/create', ProjectCreate::class)->name('projects.create');
+    Route::get('projects/show/{project}', ProjectShow::class)->name('projects.show');
+    Route::get('projects/{project}/files', ProjectFile::class)->name('projects.file');
+    Route::get('projects/{project}/ofices', ProjectOfices::class)->name('projects.ofices');
 
-    Route::get('projects', ProjectIndex::class)->name('projects.index')->middleware('role:admin,root,user');
-    Route::get('projects/create', ProjectCreate::class)->name('projects.create')->middleware('role:admin,root,user');
-    Route::get('projects/show/{project}', ProjectShow::class)->name('projects.show')->middleware('role:admin,root,user');
-    Route::get('projects/edit/{project}', ProjectEdit::class)->name('projects.edit')->middleware('role:admin,root');
-    Route::get('projects/{project}/files', ProjectFile::class)->name('projects.file')->middleware('role:admin,root,user');
-    Route::get('projects/{project}/ofices', ProjectOfices::class)->name('projects.ofices')->middleware('role:admin,root,user');
+    Route::get('contracts', ContractIndex::class)->name('contracts.index');
+    Route::get('contracts/create', ContractCreate::class)->name('contracts.create');
+    Route::get('contracts/show/{contract}', ContractShow::class)->name('contracts.show');
+    Route::get('contracts/{contract}/files', ContractFile::class)->name('contracts.file');
 
-    Route::get('contracts', ContractIndex::class)->name('contracts.index')->middleware('role:admin,root,user');
-    Route::get('contracts/create', ContractCreate::class)->name('contracts.create')->middleware('role:admin,root,user');
-    Route::get('contracts/show/{contract}', ContractShow::class)->name('contracts.show')->middleware('role:admin,root,user');
-    Route::get('contracts/edit/{contract}', ContractEdit::class)->name('contracts.edit')->middleware('role:admin,root');
-    Route::get('contracts/{contract}/files', ContractFile::class)->name('contracts.file')->middleware('role:admin,root,user');
+    Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index');
+    Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create');
+    Route::get('affiliates/edit/{affiliate}', AffilatesEdit::class)->name('affiliates.edit');
+    Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show');
+});
 
-    Route::get('audit', AuditIndex::class)->name('audit.index')->middleware('role:root');
-    Route::get('audit/show/{audit}', AuditShow::class)->name('audit.show')->middleware('role:root');
+Route::middleware(['auth', 'verified', 'throttle:50,1', 'role:admin,root'])->group(function () {
+    Route::get('collaborators/edit/{collaborator}', CollaboratorEdit::class)->name('collaborators.edit');
 
-    Route::get('users', UsersIndex::class)->name('users.index')->middleware('role:root');
-    Route::get('users/create', UsersCreate::class)->name('users.create')->middleware('role:root');
-    Route::get('users/show/{user:name}', UsersShow::class)->name('users.show')->middleware('role:root');
-    Route::get('users/edit/{user}', UsersEdit::class)->name('users.edit')->middleware('role:root');
+    Route::get('documents/edit/{document}', DocumentsEdit::class)->name('documents.edit');
 
-    Route::get('affiliates', AffilatesIndex::class)->name('affiliates.index')->middleware('role:admin,root,user');
-    Route::get('affiliates/create', AffilatesCreate::class)->name('affiliates.create')->middleware('role:admin,root,user');
-    Route::get('affiliates/edit/{affiliate}', AffilatesEdit::class)->name('affiliates.edit')->middleware('role:admin,root,user');
-    Route::get('affiliates/show/{affiliate}', AffilatesShow::class)->name('affiliates.show')->middleware('role:admin,root,user');
+    Route::get('projects/edit/{project}', ProjectEdit::class)->name('projects.edit');
+    
+    Route::get('contracts/edit/{contract}', ContractEdit::class)->name('contracts.edit');
 
-    Route::get('periods', AffiliatePeriodsIndex::class)->name('periods.index')->middleware('role:admin,root');
-    Route::get('periods/create', AffiliatePeriodsCreate::class)->name('periods.create')->middleware('role:admin,root');
-    Route::get('periods/edit/{period}', AffiliatePeriodsEdit::class)->name('periods.edit')->middleware('role:admin,root');
+    Route::get('periods', AffiliatePeriodsIndex::class)->name('periods.index');
+    Route::get('periods/create', AffiliatePeriodsCreate::class)->name('periods.create');
+    Route::get('periods/edit/{period}', AffiliatePeriodsEdit::class)->name('periods.edit');
+});
+
+Route::middleware(['auth', 'verified', 'throttle:50,1', 'role:root'])->group(function () {
+    Route::get('audit', AuditIndex::class)->name('audit.index');
+    Route::get('audit/show/{audit}', AuditShow::class)->name('audit.show');
+
+    Route::get('users', UsersIndex::class)->name('users.index');
+    Route::get('users/create', UsersCreate::class)->name('users.create');
+    Route::get('users/show/{user:name}', UsersShow::class)->name('users.show');
+    Route::get('users/edit/{user}', UsersEdit::class)->name('users.edit');
 });
 
 require __DIR__.'/settings.php';

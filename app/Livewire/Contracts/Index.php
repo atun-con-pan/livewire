@@ -20,14 +20,17 @@ class Index extends Component
 
     public function render()
     {
-        $contracts = Contract::query()
+        $contracts = Contract::with('project')
             ->when($this->search, function ($query) {
-                $query->where('no_contract', 'like', '%' . $this->search . '%')
-                      ->orWhere('nog_contract', 'like', '%' . $this->search . '%')
-                      ->orWhere('contract_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('status', 'like', '%' . $this->search . '%')
-                      ->orWhere('filial', 'like', '%' . $this->search . '%')
-                      ->orWhere('person_charge', 'like', '%' . $this->search . '%');
+                $query->where(function ($q) {
+                    $q->where('no_contract', 'like', '%' . $this->search . '%')
+                        ->orWhere('status', 'like', '%' . $this->search . '%')
+                        ->orWhere('filial', 'like', '%' . $this->search . '%')
+                        ->orWhere('person_charge', 'like', '%' . $this->search . '%')
+                        ->orWhereHas('project', function ($project) {
+                            $project->where('nog', 'like', '%' . $this->search . '%')->orWhere('name', 'like', '%' . $this->search . '%');
+                        });
+                });
             })
             ->latest()
             ->paginate(8);

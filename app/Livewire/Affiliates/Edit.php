@@ -52,7 +52,7 @@ class Edit extends Component
 
         $this->redirectRoute('affiliates.index', navigate: true);
 
-        Flux::toast(variant: 'danger', heading: 'Registro Eliminado.', text: 'El registro se ha eliminado exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
 
     public function render()

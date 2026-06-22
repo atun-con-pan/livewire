@@ -53,7 +53,7 @@ class FormDocument extends Form
             ]);
         }
 
-        Flux::toast(variant: 'success', heading: 'Registro Creado.', text: 'Los archivos se han creado exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
 
         $this->reset(['file']);
     }
@@ -141,7 +141,7 @@ class FormDocument extends Form
             ]);
         }
 
-        Flux::toast(variant: 'success', heading: 'Registro Actualizado.', text: 'El registro se ha actualizado exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro editado correctamente');
 
         $this->reset(['file']);
     }

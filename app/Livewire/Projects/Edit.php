@@ -4,6 +4,7 @@ namespace App\Livewire\Projects;
 
 use App\Livewire\Forms\FormProject;
 use App\Models\Project;
+use Flux\Flux;
 use Livewire\Component;
 
 class Edit extends Component
@@ -41,9 +42,9 @@ class Edit extends Component
     {
         $this->project->delete();
 
-        session()->flash('success', 'Proyecto eliminado correctamente.');
-
         $this->redirectRoute('projects.index', navigate: true);
+
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
 
     public function render()

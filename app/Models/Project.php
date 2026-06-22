@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\AffiliatePeriod;
+use App\Models\Contract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable as AuditableTrait;
@@ -40,5 +41,10 @@ class Project extends Model implements Auditable
         return $this->belongsToMany(Affiliate::class, 'affiliate_periods')
             ->withPivot(['start_date', 'end_date'])
             ->withTimestamps();
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
     }
 }

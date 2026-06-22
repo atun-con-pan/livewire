@@ -47,11 +47,7 @@ class FormAffiliatePeriod extends Form
 
         AffiliatePeriod::create($data);
 
-        Flux::toast(
-            variant: 'success',
-            heading: 'Período creado',
-            text: 'Creado correctamente'
-        );
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
 
         $this->reset();
 
@@ -80,11 +76,7 @@ class FormAffiliatePeriod extends Form
 
         $this->period->update($data);
 
-        Flux::toast(
-            variant: 'success',
-            heading: 'Período actualizado',
-            text: 'Actualizado correctamente'
-        );
+        Flux::toast(variant: 'success', text: 'Registro editado correctamente');
 
         return true;
     }

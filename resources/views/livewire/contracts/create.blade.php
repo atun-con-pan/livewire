@@ -47,32 +47,25 @@
     <form wire:submit="save"
         class="space-y-5 w-full p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="md:col-span-1">
-                <flux:input :readonly="($this->isShow())" wire:model="form.nog_contract" label="NOG" name="nog_contract" placeholder="Ingrese el NOG del contrato" required />
-            </div>
-            <div class="md:col-span-3">
-                <flux:input :readonly="($this->isShow())" wire:model="form.contract_name" label="Nombre del contrato" name="contract_name" placeholder="Ingrese el nombre del contrato" required />
-            </div>
-        </div>
+        @if ($this->isShow())
+            @foreach ($projects as $project)
+                <flux:input :readonly="($this->isShow())" label="Proyecto" name="project_id" value="{{ $project->name }}" />
+            @endforeach
+        @else
+            <flux:select wire:model="form.project_id" label="Proyecto" name="project_id" required>
+                <option value="">Seleccione un proyecto</option>
+
+                @foreach ($projects as $project)
+                    <option value="{{ $project->id }}">
+                        {{ $project->nog }} - {{ $project->name }}
+                    </option>
+                @endforeach
+            </flux:select>
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <flux:input :readonly="($this->isShow())" wire:model="form.contract_registration_date" label="Fecha de inscripción del contrato" name="contract_registration_date" type="date" required />
-            <flux:input :readonly="($this->isShow())" wire:model="form.contract_subscription_date" label="Fecha de suscripción del contrato" name="contract_subscription_date" type="date" required />
-            <flux:input :readonly="($this->isShow())" wire:model="form.start_date_activities" label="Fecha de inicio de actividades" name="start_date_activities" type="date" required />
-            <flux:input :readonly="($this->isShow())" wire:model="form.final_date_activities" label="Fecha de finalización de actividades" name="final_date_activities" type="date" />
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="md:col-span-1">
-                <flux:input :readonly="($this->isShow())" wire:model="form.no_contract" label="Número del contrato" name="no_contract" placeholder="Ingrese el número del contrato" required />
-            </div>
-            <div class="md:col-span-3">
-                <flux:input :readonly="($this->isShow())" wire:model="form.execution_address" label="Dirección del proyecto" name="execution_address" placeholder="Ingrese la descripción del proyecto" required />
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <flux:input :readonly="($this->isShow())" wire:model="form.no_contract" label="Número del contrato" name="no_contract" placeholder="Ingrese el número del contrato" required />
             <flux:input :readonly="($this->isShow())" wire:model="form.number_workers" label="Cantidad de trabajadores" name="number_workers" type="number" required placeholder="Ingrese la cantidad de trabajadores"/>
             <flux:input.group label="Monto de salarios">
                 <flux:select class="max-w-fit">
@@ -81,9 +74,12 @@
                 </flux:select>
                 <flux:input :readonly="($this->isShow())" wire:model="form.salary_amount" mask:dynamic="$money($input)" name="salary_amount" placeholder="Ingrese el precio" required />
             </flux:input.group>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <flux:input :readonly="($this->isShow())" wire:model="form.filial" label="Filial" name="filial" placeholder="Ingrese la filial" required />
             @if ($this->isShow())
-                <flux:input :readonly="($this->isShow())" wire:model="form.status" label="Estado" name="status" />
+                <flux:input :readonly="($this->isShow())" wire:model="form.project_id" label="Estado" name="status" />
                 <flux:input :readonly="($this->isShow())" wire:model="form.person_charge" label="Persona a cargo" name="person_charge" />
             @else
                 <flux:select wire:model="form.status" label="Estado" name="status" required>

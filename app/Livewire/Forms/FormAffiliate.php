@@ -38,7 +38,7 @@ class FormAffiliate extends Form
 
         Affiliate::create($validated);
 
-        Flux::toast(variant: 'success', heading: 'Registro creado', text: 'El afiliado se creó exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
 
         $this->resetForm();
     }
@@ -58,7 +58,7 @@ class FormAffiliate extends Form
 
         $this->affiliate->update($validated);
 
-        Flux::toast(variant: 'success', heading: 'Registro actualizado', text: 'El afiliado se actualizó exitosamente.', duration: 3000);
+        Flux::toast(variant: 'success', text: 'Registro editado correctamente');
 
         $this->resetForm();
     }

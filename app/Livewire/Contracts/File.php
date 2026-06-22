@@ -57,12 +57,7 @@ class File extends Component
 
         $this->reset('file');
         
-        Flux::toast(
-            variant: 'success',
-            heading: 'Registro Creado.',
-            text: "El registro se ha creado exitosamente.",
-            duration: 3000
-        );
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
     }
 
     public function delete(FilesContract $file)
@@ -70,12 +65,7 @@ class File extends Component
         Storage::disk('public')->delete($file->file_path);
         $file->delete();
 
-        Flux::toast(
-            variant: 'danger',
-            heading: 'Registro Eliminado.',
-            text: "El registro se ha eliminado exitosamente.",
-            duration: 3000,
-        );
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
     }
     
     public function render()

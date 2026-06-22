@@ -58,12 +58,7 @@ class Ofices extends Component
             'file_path' => $path,
         ]);
 
-        Flux::toast(
-            variant: 'success',
-            heading: 'Registro creado',
-            text: 'El oficio fue guardado correctamente.',
-            duration: 3000
-        );
+        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
 
         $this->reset([
             'date',
@@ -86,12 +81,7 @@ class Ofices extends Component
 
         $ofice->delete();
 
-        Flux::toast(
-            variant: 'danger',
-            heading: 'Registro eliminado',
-            text: 'El oficio se ha eliminado exitosamente.',
-            duration: 3000,
-        );
+        Flux::toast(variant: 'success', text: 'Registro eliminado correctamente');
 
         // Si estás usando paginación y eliminaste el último registro de la página
         if ($this->getPage() > 1 && $this->ofices()->count() === 0) {
