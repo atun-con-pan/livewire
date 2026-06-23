@@ -12,11 +12,13 @@
         </h2>
 
         <div class="flex gap-2">
-            <flux:button
-                onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()"
-                wire:click="delete" variant="danger" size="sm" icon="trash">
-                Eliminar
-            </flux:button>
+            @if ($this->isEdit())
+                <flux:button
+                    onclick="confirm('¿Estás seguro de eliminar este colaborador?') || event.stopImmediatePropagation()"
+                    wire:click="delete" variant="danger" size="sm" icon="trash">
+                    Eliminar
+                </flux:button>
+            @endif
             <flux:button href="{{ route('periods.index') }}"
                 wire:navigate variant="primary" size="sm" icon="chevron-left">
                 Regresar

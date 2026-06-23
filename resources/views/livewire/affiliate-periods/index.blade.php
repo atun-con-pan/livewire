@@ -12,6 +12,8 @@
         </flux:button>
     </div>
 
+    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Buscar periodos de un afiliado por nombre o número de afiliación ..." class="mb-4" />
+
     <!-- TABLA (Desktop y Tablet) -->
     <div class="hidden md:block">
         <div
