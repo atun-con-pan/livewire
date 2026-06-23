@@ -48,7 +48,7 @@ class Index extends Component
                 });
             })
             ->latest()
-            ->paginate(9);
+            ->paginate(10);
 
         return view('livewire.audit.index', compact('audits'));
     }

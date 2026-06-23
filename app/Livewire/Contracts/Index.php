@@ -33,7 +33,7 @@ class Index extends Component
                 });
             })
             ->latest()
-            ->paginate(8);
+            ->paginate(10);
 
         return view('livewire.contracts.index', compact('contracts'));
     }

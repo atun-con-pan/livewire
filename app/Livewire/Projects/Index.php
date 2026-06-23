@@ -30,7 +30,7 @@ class Index extends Component
                       ->orWhere('status', 'like', '%' . $this->search . '%');
             })
             ->latest()
-            ->paginate(8);
+            ->paginate(10);
 
         return view('livewire.projects.index', compact('projects'));
     }
