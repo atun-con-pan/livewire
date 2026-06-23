@@ -23,9 +23,14 @@ class Index extends Component
             'periods' => AffiliatePeriod::query()
                 ->with(['affiliate', 'project'])
                 ->when($this->search, function ($query) {
-                    $query->whereHas('affiliate', function ($q) {
-                        $q->where('name', 'like', "%{$this->search}%")
-                          ->orWhere('no_affiliate', 'like', "%{$this->search}%");
+                    $query->where(function ($query) {
+                        $query
+                            ->whereHas('affiliate', function ($q) {
+                                $q->where('name', 'like', "%{$this->search}%")->orWhere('no_affiliate', 'like', "%{$this->search}%");
+                            })
+                            ->orWhereHas('project', function ($q) {
+                                $q->where('nog', 'like', "%{$this->search}%");
+                            });
                     });
                 })
                 ->latest()
