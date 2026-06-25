@@ -30,7 +30,7 @@
                             wire:click="delete"
                             variant="danger" size="sm" icon="trash">
                             Eliminar
-                        </flux:buttononclick=>
+                        </flux:buttononclick>
                     @endif
                 
                     <flux:button href="{{ route('collaborators.file', $collaborator) }}" wire:navigate variant="primary" color="green" size="sm" icon="folder">

@@ -26,7 +26,15 @@
         <flux:input type="file" wire:model="file" label="Archivo" />
 
         <div class="flex justify-end">
-            <flux:button variant="primary" color="blue" icon="bookmark" type="submit">Guardar</flux:button>
+            <flux:button 
+                variant="primary" 
+                color="blue" 
+                icon="bookmark" 
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:target="file,save">
+                Guardar
+            </flux:button>
         </div>
     </form>
 

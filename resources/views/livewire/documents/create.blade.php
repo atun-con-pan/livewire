@@ -85,12 +85,16 @@
                     wire:target="form.file,save">
                     Guardar
                 </flux:button>
-
-                <div wire:loading wire:target="form.file">
-                    Subiendo archivo...
-                </div>
             @elseif ($this->isEdit())
-                <flux:button variant="primary" color="yellow" icon="pencil-square" type="submit">Editar</flux:button>
+                <flux:button 
+                    variant="primary" 
+                    color="yellow" 
+                    icon="pencil-square" 
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    wire:target="form.file,save">
+                    Editar
+                </flux:button>
             @elseif ($this->isShow())
             
             @endif

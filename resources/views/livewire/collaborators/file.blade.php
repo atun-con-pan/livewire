@@ -10,13 +10,21 @@
         </flux:button>
     </div>
 
-    <form wire:submit="store"
+    <form wire:submit="save"
         class="space-y-5 w-full mb-4 p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
         <flux:input type="file" wire:model="file" label="Archivo" multiple />
 
         <div class="flex justify-end">
-            <flux:button variant="primary" color="blue" icon="bookmark" type="submit">Guardar</flux:button>
+            <flux:button 
+                variant="primary" 
+                color="blue" 
+                icon="bookmark" 
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:target="file,save">
+                Guardar
+            </flux:button>
         </div>
     </form>
 
@@ -37,7 +45,7 @@
                         <td class="p-2">
                             <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-info">{{ $file->file_name }}</a>
                         </td>
-                        <td class="px-4 nowrap w-1">
+                        <td class="px-4 py-2 nowrap w-1">
                             @auth
                                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'root')
                                     <flux:button

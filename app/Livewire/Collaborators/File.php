@@ -22,7 +22,7 @@ class File extends Component
         $this->collaborator = $collaborator;
     }
 
-    public function store()
+    public function save()
     {
         $this->validate([
             'file' => 'required|array',

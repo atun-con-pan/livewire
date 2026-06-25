@@ -10,13 +10,21 @@
         </flux:button>
     </div>
 
-    <form wire:submit="store" enctype="multipart/form-data"
+    <form wire:submit="save" enctype="multipart/form-data"
         class="space-y-5 w-full mb-4 p-6 dark:bg-surface-dark-alt rounded-radius border border-outline dark:border-outline-dark shadow-md">
 
         <flux:input type="file" wire:model="file" label="Archivo" multiple />
 
         <div class="flex justify-end">
-            <flux:button variant="primary" color="blue" icon="bookmark" type="submit">Guardar</flux:button>
+            <flux:button 
+                variant="primary" 
+                color="blue" 
+                icon="bookmark" 
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:target="file,save">
+                Guardar
+            </flux:button>
         </div>
     </form>
 
