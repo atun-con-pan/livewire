@@ -16,7 +16,6 @@ class File extends Component
 
     public Project $project;
     public $file = [];
-    public $description = '';
 
     public function mount(Project $project)
     {
@@ -26,7 +25,6 @@ class File extends Component
     public function store()
     {
         $this->validate([
-            'description' => 'string|max:255',
             'file' => 'required|array',
             'file.*' => 'file|max:102400',
         ]);
@@ -51,7 +49,6 @@ class File extends Component
 
             // Guardar en BD
             FilesProject::create([
-                'description' => $this->description,
                 'file_name' => $file_name,
                 'file_path' => $file_path,
                 'project_id' => $this->project->id, // 🔥 clave
