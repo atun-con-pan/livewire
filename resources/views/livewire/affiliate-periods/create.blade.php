@@ -32,10 +32,9 @@
             <flux:select :readonly="$this->isShow()" wire:model="form.affiliate_id" label="Afiliado" required>
                 <option value="">Seleccione un afiliado</option>
                 @foreach ($affiliates as $affiliate)
-                    <option value="{{ $affiliate->id }}"> {{ $affiliate->name }} - {{ $affiliate->no_affiliate }}</option>
+                    <option value="{{ $affiliate->id }}">{{ $affiliate->name }} - {{ $affiliate->no_affiliate }}</option>
                 @endforeach
             </flux:select>
-
         </div>
         
         {{-- PROYECTO --}}

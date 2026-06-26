@@ -46,7 +46,9 @@ use App\Livewire\AffiliatePeriods\Edit as AffiliatePeriodsEdit;
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'livewire.auth.login')->name('home');
+Route::middleware('guest')->group(function () {
+    Route::view('/', 'livewire.auth.login')->name('home');
+});
 
 Route::middleware(['auth', 'verified', 'throttle:50,1', 'role:admin,root,user'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
