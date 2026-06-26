@@ -1,7 +1,5 @@
 <?php
 
-use App\Livewire\Explorer\Index as FileExplorer;
-
 use App\Livewire\Collaborators\Index as CollaboratorIndex;
 use App\Livewire\Collaborators\Create as CollaboratorCreate;
 use App\Livewire\Collaborators\Edit as CollaboratorEdit;
