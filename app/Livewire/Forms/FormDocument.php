@@ -5,11 +5,12 @@ namespace App\Livewire\Forms;
 use App\Models\Document;
 use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
 
 class FormDocument extends Form
 {
-    public ?Document $document;
+    public ?Document $document = null;
     public $type = '';
     public $file;
     public $file_name;
@@ -17,43 +18,62 @@ class FormDocument extends Form
     // Lista blanca de tipos permitidos
     private const ALLOWED_TYPES = ['Contratos', 'Actas', 'Fianzas', 'Cartas', 'Oficios', 'Planos', 'Facturas', 'Recibos', 'Planillas', 'Cotizaciones', 'Documentos ofertas', 'Informes fotográficos', 'Impuestos', 'Otros'];
 
-    // Tamaño máximo en bytes
-    private const MAX_FILE_SIZE = 512 * (1024 );
+    // Laravel valida archivos en kilobytes. 512 * 1024 = 512 MB.
+    private const MAX_FILE_SIZE_KB = 512 * 1024;
 
     public function store()
     {
         $this->validate([
-            'type' => 'required|string|max:100',
+            'type' => ['required', 'string', 'max:100', Rule::in(self::ALLOWED_TYPES)],
             'file' => 'required|array',
-            'file.*' => 'file|max:' . (self::MAX_FILE_SIZE),
+            'file.*' => 'file|max:' . self::MAX_FILE_SIZE_KB,
         ]);
 
-        if (!in_array($this->type, self::ALLOWED_TYPES)) {
-            $this->addError('type', 'Tipo de documento no válido.');
+        $files = collect($this->file)->map(function ($file) {
+            $file_name = $file->getClientOriginalName();
+            $directory = "documents/{$this->type}";
+
+            return [
+                'file' => $file,
+                'file_name' => $file_name,
+                'directory' => $directory,
+                'file_path' => "{$directory}/{$file_name}",
+            ];
+        });
+
+        $uniqueFiles = $files->unique('file_path')->values();
+
+        $existingPaths = Document::whereIn('file_path', $uniqueFiles->pluck('file_path'))
+            ->pluck('file_path');
+
+        $filesToStore = $uniqueFiles
+            ->reject(fn ($uploadedFile) => $existingPaths->contains($uploadedFile['file_path']))
+            ->values();
+
+        if ($filesToStore->isEmpty()) {
+            $this->addError('file', 'Todos los archivos seleccionados ya existen o están repetidos.');
             return;
         }
 
-        foreach ($this->file as $f) {
-            $file_name = $f->getClientOriginalName();
-            $directory = "documents/{$this->type}";
-            $file_path = "{$directory}/{$file_name}";
-
-            if (Document::where('file_path', $file_path)->exists()) {
-                $this->addError('file', "El archivo {$file_name} ya existe.");
-                continue;
-            }
-
-            $f->storeAs($directory, $file_name, 'public');
+        foreach ($filesToStore as $uploadedFile) {
+            $uploadedFile['file']->storeAs($uploadedFile['directory'], $uploadedFile['file_name'], 'public');
 
             // Guardar en BD
             Document::create([
                 'type' => $this->type,
-                'file_name' => $file_name,
-                'file_path' => $file_path,
+                'file_name' => $uploadedFile['file_name'],
+                'file_path' => $uploadedFile['file_path'],
             ]);
         }
 
-        Flux::toast(variant: 'success', text: 'Registro creado correctamente');
+        $skippedFiles = $files->count() - $filesToStore->count();
+        $message = 'Registro creado correctamente';
+
+        if ($skippedFiles > 0) {
+            $message .= " ({$skippedFiles} archivo" . ($skippedFiles === 1 ? '' : 's') . ' omitido' . ($skippedFiles === 1 ? '' : 's') . ' por duplicado)';
+        }
+
+        Flux::toast(variant: 'success', text: $message);
 
         $this->reset(['file']);
     }
@@ -69,17 +89,17 @@ class FormDocument extends Form
     public function update()
     {
         $this->validate([
-            'type' => 'required|string|max:100',
-            'file' => 'nullable|file|max:' . (self::MAX_FILE_SIZE),
+            'type' => ['required', 'string', 'max:100', Rule::in(self::ALLOWED_TYPES)],
+            'file' => 'nullable|file|max:' . self::MAX_FILE_SIZE_KB,
         ]);
-
-        if (!in_array($this->type, self::ALLOWED_TYPES)) {
-            $this->addError('type', 'Tipo de documento no válido.');
-            return;
-        }
 
         // Registro actual
         $document = $this->document;
+
+        if (! $document) {
+            $this->addError('file', 'No se encontró el documento que deseas editar.');
+            return;
+        }
 
         $old_path = $document->file_path;
 
@@ -100,11 +120,6 @@ class FormDocument extends Form
                 return;
             }
 
-            // Borrar archivo anterior
-            if (Storage::disk('public')->exists($old_path)) {
-                Storage::disk('public')->delete($old_path);
-            }
-
             // Guardar nuevo archivo
             $this->file->storeAs($directory, $file_name, 'public');
 
@@ -114,6 +129,11 @@ class FormDocument extends Form
                 'file_name' => $file_name,
                 'file_path' => $new_path,
             ]);
+
+            // Borrar archivo anterior solo después de guardar el nuevo y actualizar la BD.
+            if ($old_path !== $new_path && Storage::disk('public')->exists($old_path)) {
+                Storage::disk('public')->delete($old_path);
+            }
         }
         /*
     |--------------------------------------------------------------------------
@@ -131,8 +151,17 @@ class FormDocument extends Form
                 return;
             }
 
-            // Mover archivo
-            Storage::disk('public')->move($old_path, $new_path);
+            if ($old_path !== $new_path) {
+                if (! Storage::disk('public')->exists($old_path)) {
+                    $this->addError('file', 'No se encontró el archivo actual para moverlo.');
+                    return;
+                }
+
+                if (! Storage::disk('public')->move($old_path, $new_path)) {
+                    $this->addError('file', 'No se pudo mover el archivo al nuevo tipo.');
+                    return;
+                }
+            }
 
             // Actualizar BD
             $document->update([

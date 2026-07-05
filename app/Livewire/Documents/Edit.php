@@ -39,6 +39,11 @@ class Edit extends Component
     public function save()
     {
         $this->form->update();
+
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
+        }
+
         $this->redirectRoute('documents.index', navigate: true);
     }
 
