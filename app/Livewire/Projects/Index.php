@@ -21,6 +21,7 @@ class Index extends Component
     public function render()
     {
         $projects = Project::query()
+            ->with('files')
             ->when($this->search, function ($query) {
                 $query->where('nog', 'like', '%' . $this->search . '%')
                       ->orWhere('event', 'like', '%' . $this->search . '%')

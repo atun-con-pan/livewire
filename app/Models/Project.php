@@ -47,4 +47,65 @@ class Project extends Model implements Auditable
     {
         return $this->hasOne(Contract::class);
     }
+
+    public function getFileNameForCategory(string $category): ?string
+    {
+        $file = $this->getFileForCategory($category);
+
+        return $file?->file_name;
+    }
+
+    public function getFilePathForCategory(string $category): ?string
+    {
+        $file = $this->getFileForCategory($category);
+
+        return $file?->file_path;
+    }
+
+    protected function getFileForCategory(string $category): ?FilesProject
+    {
+        $files = $this->relationLoaded('files') ? $this->files : $this->files()->get();
+
+        foreach ($files as $file) {
+            if ($this->matchesCategory($file->file_name ?? '', $category)) {
+                return $file;
+            }
+        }
+
+        return null;
+    }
+
+    protected function matchesCategory(string $fileName, string $category): bool
+    {
+        $normalizedName = $this->normalizeText($fileName);
+        $keywords = match ($category) {
+            'contrato' => ['contrato'],
+            'inicio' => ['acta de inicio', 'acta inicio', 'inicio'],
+            'recepcion' => ['acta de recepcion', 'acta recepcion', 'recepcion', 'recepcion'],
+            default => [],
+        };
+
+        foreach ($keywords as $keyword) {
+            if (str_contains($normalizedName, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function normalizeText(string $value): string
+    {
+        $value = mb_strtolower($value, 'UTF-8');
+        $value = strtr($value, [
+            'á' => 'a', 'à' => 'a', 'ä' => 'a', 'â' => 'a',
+            'é' => 'e', 'è' => 'e', 'ë' => 'e', 'ê' => 'e',
+            'í' => 'i', 'ì' => 'i', 'ï' => 'i', 'î' => 'i',
+            'ó' => 'o', 'ò' => 'o', 'ö' => 'o', 'ô' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'ü' => 'u', 'û' => 'u',
+            'ñ' => 'n', 'ç' => 'c',
+        ]);
+
+        return trim(preg_replace('/\s+/', ' ', $value) ?? $value);
+    }
 }
