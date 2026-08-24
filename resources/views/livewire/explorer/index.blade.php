@@ -153,28 +153,41 @@
 
 
     <!-- MODAL SUBIR ARCHIVO -->
-    <flux:modal name="upload-file" class="md:w-96">
-        <form wire:submit="storeFile" class="space-y-6" enctype="multipart/form-data">
+    <!-- MODAL SUBIR ARCHIVO -->
+<flux:modal name="upload-file" class="md:w-96">
+    <form wire:submit="storeFile" class="space-y-6" enctype="multipart/form-data">
 
-            <div>
-                <flux:heading size="lg">
-                    Subir archivos
-                </flux:heading>
-            </div>
+        <div>
+            <flux:heading size="lg">
+                Subir archivos
+            </flux:heading>
+        </div>
 
-            <flux:input type="file" wire:model="uploadedFiles" name="uploadedFiles" label="Selecciona uno o varios archivos"
-                multiple required />
+        <flux:input
+            type="file"
+            wire:model="uploadedFiles"
+            name="uploadedFiles"
+            label="Selecciona uno o varios archivos"
+            multiple
+            required
+        />
 
-            <div class="flex">
-                <flux:spacer />
+        <div class="flex">
+            <flux:spacer />
 
-                <flux:button type="submit" variant="primary" icon="arrow-up-tray">
-                    Subir
-                </flux:button>
-            </div>
+            <flux:button
+                type="submit"
+                variant="primary"
+                icon="arrow-up-tray"
+                wire:loading.attr="disabled"
+                wire:target="uploadedFiles,storeFile"
+            >
+                Subir
+            </flux:button>
+        </div>
 
-        </form>
-    </flux:modal>
+    </form>
+</flux:modal>
 
 
     <!-- MODAL RENOMBRAR -->
