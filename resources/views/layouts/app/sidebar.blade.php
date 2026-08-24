@@ -17,6 +17,10 @@
                         Dashbaord
                     </flux:sidebar.item>
 
+                    <flux:sidebar.item icon="folder" :href="route('folder.index')" :current="request()->routeIs('folder.*')" wire:navigate>
+                        Storage
+                    </flux:sidebar.item>
+
                     <flux:sidebar.item icon="users" :href="route('collaborators.index')" :current="request()->routeIs('collaborators.*')" wire:navigate>
                         Colaboradores
                     </flux:sidebar.item>

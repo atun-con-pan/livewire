@@ -6,6 +6,8 @@ use App\Livewire\Collaborators\Edit as CollaboratorEdit;
 use App\Livewire\Collaborators\Show as CollaboratorShow;
 use App\Livewire\Collaborators\File as CollaboratorFile;
 
+use App\Livewire\Explorer\Index as ExplorerIndex;
+
 use App\Livewire\Documents\Index as DocumentsIndex;
 use App\Livewire\Documents\Create as DocumentsCreate;
 use App\Livewire\Documents\Show as DocumentsShow;
@@ -55,6 +57,9 @@ Route::middleware(['auth', 'verified', 'throttle:50,1', 'role:admin,root,user'])
     Route::view('reports', 'dashboard.reports')->name('reports');
     Route::view('ilovepdf', 'dashboard.ilovepdf')->name('ilovepdf');
     Route::view('invoices', 'dashboard.invoices')->name('invoices');
+
+    Route::get('archives', ExplorerIndex::class)->name('folder.index');
+    Route::get('archives/show/{folder}', ExplorerIndex::class)->name('folder.show');
 
     Route::get('collaborators', CollaboratorIndex::class)->name('collaborators.index');
     Route::get('collaborators/create', CollaboratorCreate::class)->name('collaborators.create');
