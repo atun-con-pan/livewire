@@ -217,6 +217,8 @@
                 webkitdirectory
                 directory
                 x-on:change="$wire.set('folderUploadPayload', Array.from($event.target.files).map(file => ({ relativePath: file.webkitRelativePath || file.name })))"
+                wire:loading.attr="disabled"
+                wire:target="uploadedFolderFiles,folderUploadPayload,storeFolderUpload"
                 required
             />
 
