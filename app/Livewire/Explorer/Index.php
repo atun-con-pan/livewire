@@ -7,6 +7,7 @@ use App\Models\Folder;
 use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -17,9 +18,12 @@ class Index extends Component
     public ?Folder $folder = null;
     public $name;
     public $uploadedFiles = [];
+    public $uploadedFolderFiles = [];
+    public $folderUploadPayload = [];
     public $renameType;
     public $renameId;
     public $renameName;
+    public ?int $targetFolderId = null;
 
     public function mount(?Folder $folder = null)
     {
@@ -117,6 +121,110 @@ class Index extends Component
         }
     }
 
+    public function storeFolderUpload()
+    {
+        $validated = $this->validate([
+            'uploadedFolderFiles' => ['required', 'array', 'min:1'],
+            'uploadedFolderFiles.*' => ['file', 'max:512000'],
+            'folderUploadPayload' => ['array'],
+        ]);
+
+        $uploadedFiles = $validated['uploadedFolderFiles'];
+        $payload = $validated['folderUploadPayload'];
+        $savedCount = 0;
+
+        foreach ($uploadedFiles as $index => $uploadedFile) {
+            $relativePath = trim((string) ($payload[$index]['relativePath'] ?? $uploadedFile->getClientOriginalName()));
+            $relativePath = str_replace('\\', '/', $relativePath);
+            $relativePath = preg_replace('#/+#', '/', $relativePath);
+
+            if ($relativePath === '') {
+                continue;
+            }
+
+            $segments = array_values(array_filter(explode('/', $relativePath), fn ($segment) => trim((string) $segment) !== ''));
+
+            if ($segments === []) {
+                continue;
+            }
+
+            $fileName = array_pop($segments);
+            $relativeFileName = trim((string) $fileName);
+
+            if ($relativeFileName === '') {
+                continue;
+            }
+
+            $targetFolderId = $this->folder?->id;
+
+            foreach ($segments as $folderName) {
+                $folderName = trim((string) $folderName);
+
+                if ($folderName === '') {
+                    continue;
+                }
+
+                $folder = Folder::where('parent_id', $targetFolderId)
+                    ->whereRaw('LOWER(name) = ?', [mb_strtolower($folderName)])
+                    ->first();
+
+                if (! $folder) {
+                    $folder = Folder::create([
+                        'parent_id' => $targetFolderId,
+                        'name' => $folderName,
+                    ]);
+                }
+
+                $targetFolderId = $folder->id;
+            }
+
+            $exists = File::where('folder_id', $targetFolderId)
+                ->whereRaw('LOWER(name) = ?', [mb_strtolower($relativeFileName)])
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            $extension = $uploadedFile->getClientOriginalExtension();
+            $mimeType = $uploadedFile->getMimeType();
+            $size = $uploadedFile->getSize();
+            $physicalName = bin2hex(random_bytes(16));
+
+            if ($extension !== '') {
+                $physicalName .= '.'.$extension;
+            }
+
+            $uploadedFile->storeAs('files', $physicalName, 'public');
+
+            File::create([
+                'folder_id' => $targetFolderId,
+                'name' => $relativeFileName,
+                'physical_name' => $physicalName,
+                'extension' => $extension,
+                'mime_type' => $mimeType,
+                'size' => $size,
+            ]);
+
+            $savedCount++;
+        }
+
+        $this->reset(['uploadedFolderFiles', 'folderUploadPayload']);
+
+        Flux::toast(
+            variant: 'success',
+            text: $savedCount > 0
+                ? 'Carpeta y archivos subidos correctamente.'
+                : 'No se subió ningún archivo porque ya existían en esta ubicación.'
+        );
+
+        if ($this->folder) {
+            $this->redirectRoute('folder.show', ['folder' => $this->folder->id], navigate: true);
+        } else {
+            $this->redirectRoute('folder.index', navigate: true);
+        }
+    }
+
     public function renameItem()
     {
         $validated = $this->validate([
@@ -174,6 +282,145 @@ class Index extends Component
         }
     }
 
+    public function moveItem(string $type, int $itemId, int $targetFolderId): void
+    {
+        $this->moveItems([
+            ['type' => $type, 'id' => $itemId],
+        ], $targetFolderId);
+    }
+
+    public function moveItems(array $items, int $targetFolderId): void
+    {
+        $this->targetFolderId = $targetFolderId;
+
+        $targetFolder = Folder::find($targetFolderId);
+
+        if (! $targetFolder) {
+            throw ValidationException::withMessages([
+                'targetFolderId' => ['La carpeta destino no existe.'],
+            ]);
+        }
+
+        $normalizedItems = [];
+        foreach ($items as $item) {
+            if (! is_array($item) || empty($item['type']) || empty($item['id'])) {
+                continue;
+            }
+
+            $normalizedItems[] = [
+                'type' => $item['type'],
+                'id' => (int) $item['id'],
+            ];
+        }
+
+        if ($normalizedItems === []) {
+            throw ValidationException::withMessages([
+                'items' => ['No hay elementos para mover.'],
+            ]);
+        }
+
+        $seenNames = [];
+        foreach ($normalizedItems as $itemData) {
+            $type = $itemData['type'];
+            $itemId = $itemData['id'];
+
+            if ($type === 'folder') {
+                $item = Folder::with('children')->find($itemId);
+
+                if (! $item) {
+                    throw ValidationException::withMessages([
+                        'items' => ['Una de las carpetas seleccionadas no existe.'],
+                    ]);
+                }
+
+                if ($item->id === $targetFolderId || $this->folderContains($item, $targetFolderId)) {
+                    throw ValidationException::withMessages([
+                        'targetFolderId' => ['No puedes mover una carpeta dentro de una de sus subcarpetas.'],
+                    ]);
+                }
+
+                $key = 'folder:'.mb_strtolower($item->name);
+                if (isset($seenNames[$key])) {
+                    throw ValidationException::withMessages([
+                        'items' => ['No puedes mover dos carpetas con el mismo nombre a la misma ubicación.'],
+                    ]);
+                }
+                $seenNames[$key] = true;
+
+                $exists = Folder::where('parent_id', $targetFolderId)
+                    ->whereRaw('LOWER(name) = ?', [mb_strtolower($item->name)])
+                    ->whereKeyNot($item->id)
+                    ->exists();
+
+                if ($exists) {
+                    throw ValidationException::withMessages([
+                        'items' => ['Ya existe una carpeta con este nombre en la ubicación destino.'],
+                    ]);
+                }
+
+                continue;
+            }
+
+            if ($type === 'file') {
+                $item = File::find($itemId);
+
+                if (! $item) {
+                    throw ValidationException::withMessages([
+                        'items' => ['Uno de los archivos seleccionados no existe.'],
+                    ]);
+                }
+
+                $key = 'file:'.mb_strtolower($item->name);
+                if (isset($seenNames[$key])) {
+                    throw ValidationException::withMessages([
+                        'items' => ['No puedes mover dos archivos con el mismo nombre a la misma ubicación.'],
+                    ]);
+                }
+                $seenNames[$key] = true;
+
+                $exists = File::where('folder_id', $targetFolderId)
+                    ->whereRaw('LOWER(name) = ?', [mb_strtolower($item->name)])
+                    ->whereKeyNot($item->id)
+                    ->exists();
+
+                if ($exists) {
+                    throw ValidationException::withMessages([
+                        'items' => ['Ya existe un archivo con este nombre en la ubicación destino.'],
+                    ]);
+                }
+
+                continue;
+            }
+
+            throw ValidationException::withMessages([
+                'items' => ['El tipo del elemento no es válido.'],
+            ]);
+        }
+
+        foreach ($normalizedItems as $itemData) {
+            $type = $itemData['type'];
+            $itemId = $itemData['id'];
+
+            if ($type === 'file') {
+                File::whereKey($itemId)->update(['folder_id' => $targetFolderId]);
+                continue;
+            }
+
+            Folder::whereKey($itemId)->update(['parent_id' => $targetFolderId]);
+        }
+
+        $this->reset('targetFolderId');
+
+        Flux::toast(variant: 'success', text: count($normalizedItems) > 1 ? 'Elementos movidos correctamente' : 'Elemento movido correctamente');
+
+        if ($this->folder) {
+            $this->redirectRoute('folder.show', ['folder' => $this->folder->id], navigate: true);
+            return;
+        }
+
+        $this->redirectRoute('folder.index', navigate: true);
+    }
+
     public function deleteItem(string $type, int $id): void
     {
         if ($type === 'file') {
@@ -210,6 +457,21 @@ class Index extends Component
 
             $this->redirectRoute('folder.index', navigate: true);
         }
+    }
+
+    protected function folderContains(Folder $folder, int $targetFolderId): bool
+    {
+        if ($folder->id === $targetFolderId) {
+            return true;
+        }
+
+        foreach ($folder->children as $child) {
+            if ($this->folderContains($child, $targetFolderId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function collectFolderIds(Folder $folder, array $ids = []): array
