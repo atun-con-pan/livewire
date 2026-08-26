@@ -198,46 +198,54 @@
         </form>
     </flux:modal>
 
-    <!-- MODAL SUBIR CARPETA -->
-    <flux:modal name="upload-folder" class="md:w-96">
-        <form wire:submit="storeFolderUpload" class="space-y-6" enctype="multipart/form-data">
+<!-- MODAL SUBIR CARPETA -->
+<flux:modal name="upload-folder" class="md:w-96">
+    <form wire:submit="storeFolderUpload" class="space-y-6" enctype="multipart/form-data">
 
-            <div>
-                <flux:heading size="lg">
-                    Subir carpeta completa
-                </flux:heading>
-            </div>
+        <div>
+            <flux:heading size="lg">
+                Subir carpeta completa
+            </flux:heading>
+        </div>
 
-            <flux:input
-                type="file"
-                wire:model="uploadedFolderFiles"
-                name="uploadedFolderFiles"
-                label="Selecciona una carpeta con todos sus archivos y subcarpetas"
-                multiple
-                webkitdirectory
-                directory
-                x-on:change="$wire.set('folderUploadPayload', Array.from($event.target.files).map(file => ({ relativePath: file.webkitRelativePath || file.name })))"
+        <flux:input
+            type="file"
+            wire:model="uploadedFolderFiles"
+            name="uploadedFolderFiles"
+            label="Selecciona una carpeta con todos sus archivos y subcarpetas"
+            multiple
+            webkitdirectory
+            directory
+            x-on:change="
+                $wire.folderUploading = true;
+
+                $wire.set(
+                    'folderUploadPayload',
+                    Array.from($event.target.files).map(file => ({
+                        relativePath: file.webkitRelativePath || file.name
+                    }))
+                )
+            "
+            required
+        />
+
+        <div class="flex">
+            <flux:spacer />
+
+            <flux:button
+                type="submit"
+                variant="primary"
+                icon="folder-plus"
                 wire:loading.attr="disabled"
-                wire:target="uploadedFolderFiles,folderUploadPayload,storeFolderUpload"
-                required
-            />
+                wire:target="uploadedFolderFiles"
+                x-bind:disabled="$wire.folderUploading"
+            >
+                Subir carpeta
+            </flux:button>
+        </div>
 
-            <div class="flex">
-                <flux:spacer />
-
-                <flux:button
-                    type="submit"
-                    variant="primary"
-                    icon="folder-plus"
-                    wire:loading.attr="disabled"
-                    wire:target="uploadedFolderFiles,folderUploadPayload,storeFolderUpload"
-                >
-                    Subir carpeta
-                </flux:button>
-            </div>
-
-        </form>
-    </flux:modal>
+    </form>
+</flux:modal>
 
     <!-- MODAL SUBIR ARCHIVO -->
     {{-- <flux:modal name="upload-file" class="md:w-96">

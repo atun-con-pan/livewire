@@ -24,6 +24,7 @@ class Index extends Component
     public $renameId;
     public $renameName;
     public ?int $targetFolderId = null;
+    public bool $folderUploading = false;
 
     public function mount(?Folder $folder = null)
     {
@@ -223,6 +224,11 @@ class Index extends Component
         } else {
             $this->redirectRoute('folder.index', navigate: true);
         }
+    }
+
+    public function updatedUploadedFolderFiles()
+    {
+        $this->folderUploading = false;
     }
 
     public function renameItem()
@@ -499,8 +505,15 @@ class Index extends Component
     public function render()
     {
         $folder = $this->folder;
-        $folders = $folder ? $folder->children : Folder::whereNull('parent_id')->get();
-        $files = $folder ? $folder->files : File::whereNull('folder_id')->get();
+
+        $folders = $folder
+            ? $folder->children()->orderBy('name')->get()
+            : Folder::whereNull('parent_id')->orderBy('name')->get();
+
+        $files = $folder
+            ? $folder->files()->orderBy('name')->get()
+            : File::whereNull('folder_id')->orderBy('name')->get();
+
         $filesCount = File::all()->count();
 
         return view('livewire.explorer.index', compact('folder', 'folders', 'files', 'filesCount'));

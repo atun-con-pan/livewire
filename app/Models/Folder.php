@@ -6,9 +6,13 @@ use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Folder extends Model
+class Folder extends Model implements Auditable
 {
+    use AuditableTrait;
+    
     protected $table = 'folders';
 
     protected $fillable = [
