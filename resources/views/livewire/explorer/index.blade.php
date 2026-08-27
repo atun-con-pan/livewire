@@ -199,37 +199,95 @@
     </flux:modal>
 
 <!-- MODAL SUBIR CARPETA -->
-<flux:modal name="upload-folder" class="md:w-96">
-    <form wire:submit="storeFolderUpload" class="space-y-6" enctype="multipart/form-data">
+<flux:modal name="upload-folder" class="md:w-[28rem]">
+    <form
+        wire:submit="storeFolderUpload"
+        class="space-y-6"
+        enctype="multipart/form-data"
+        x-data="{
+            totalFiles: 0,
+            totalSizeBytes: 0,
+            folderName: '',
+            handleFolderSelect(event) {
+                const files = Array.from(event.target.files);
+                this.totalFiles = files.length;
+                this.totalSizeBytes = files.reduce((acc, file) => acc + file.size, 0);
 
+                if (files.length > 0 && files[0].webkitRelativePath) {
+                    this.folderName = files[0].webkitRelativePath.split('/')[0] || '';
+                } else {
+                    this.folderName = '';
+                }
+
+                $wire.folderUploading = true;
+
+                $wire.set(
+                    'folderUploadPayload',
+                    files.map(file => ({
+                        relativePath: file.webkitRelativePath || file.name
+                    }))
+                );
+            },
+            formatBytes(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }"
+    >
         <div>
             <flux:heading size="lg">
                 Subir carpeta completa
             </flux:heading>
+            <flux:subheading>
+                Sube una carpeta preservando toda su estructura de subcarpetas y archivos.
+            </flux:subheading>
         </div>
 
         <flux:input
             type="file"
             wire:model="uploadedFolderFiles"
             name="uploadedFolderFiles"
-            label="Selecciona una carpeta con todos sus archivos y subcarpetas"
+            label="Selecciona una carpeta"
             multiple
             webkitdirectory
             directory
-            x-on:change="
-                $wire.folderUploading = true;
-
-                $wire.set(
-                    'folderUploadPayload',
-                    Array.from($event.target.files).map(file => ({
-                        relativePath: file.webkitRelativePath || file.name
-                    }))
-                )
-            "
+            x-on:change="handleFolderSelect($event)"
             required
         />
 
-        <div class="flex">
+        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+            <i class="bi bi-info-circle mr-1"></i>
+            Nota: El navegador solo transferirá carpetas que contengan al menos un archivo.
+        </p>
+
+        <!-- RESUMEN DE LA CARPETA SELECCIONADA -->
+        <div x-show="totalFiles > 0" x-cloak class="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900 space-y-1">
+            <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                <i class="bi bi-folder-fill text-amber-500"></i>
+                <span x-text="folderName || 'Carpeta seleccionada'"></span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                <span>Total de archivos: <strong class="text-zinc-700 dark:text-zinc-300" x-text="totalFiles"></strong></span>
+                <span>Tamaño aprox: <strong class="text-zinc-700 dark:text-zinc-300" x-text="formatBytes(totalSizeBytes)"></strong></span>
+            </div>
+        </div>
+
+        <!-- ESTADO: CARGANDO ARCHIVOS AL SERVIDOR -->
+        <div wire:loading wire:target="uploadedFolderFiles" class="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+            <flux:icon name="arrow-path" class="size-4 animate-spin" />
+            <span>Cargando archivos temporales al servidor...</span>
+        </div>
+
+        <!-- ESTADO: PROCESANDO ESTRUCTURA EN BD -->
+        <div wire:loading wire:target="storeFolderUpload" class="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+            <flux:icon name="arrow-path" class="size-4 animate-spin" />
+            <span>Creando estructura de carpetas y guardando archivos...</span>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
             <flux:spacer />
 
             <flux:button
@@ -237,13 +295,18 @@
                 variant="primary"
                 icon="folder-plus"
                 wire:loading.attr="disabled"
-                wire:target="uploadedFolderFiles"
-                x-bind:disabled="$wire.folderUploading"
+                wire:target="uploadedFolderFiles,storeFolderUpload"
+                x-bind:disabled="$wire.folderUploading || totalFiles === 0"
             >
-                Subir carpeta
+                <span wire:loading.remove wire:target="uploadedFolderFiles,storeFolderUpload">
+                    Subir carpeta
+                </span>
+                <span wire:loading wire:target="uploadedFolderFiles,storeFolderUpload" class="flex items-center gap-2">
+                    <flux:icon name="arrow-path" class="size-4 animate-spin" />
+                    Procesando...
+                </span>
             </flux:button>
         </div>
-
     </form>
 </flux:modal>
 
@@ -447,7 +510,7 @@
             <div draggable="true"
                 data-context-type="file" data-context-id="{{ $fileItem->id }}" data-context-name="{{ $fileItem->name }}"
                 data-draggable-item data-item-type="file" data-item-id="{{ $fileItem->id }}"
-                data-href="{{ asset('storage/files/' . $fileItem->physical_name) }}" data-open-target="_blank"
+                data-href="{{ $fileItem->url }}" data-open-target="_blank"
                 class="context-item group flex flex-col items-center justify-center rounded-md border border-transparent p-3 hover:bg-gray-100 dark:hover:bg-zinc-800 transition drag-target selection-target cursor-pointer">
 
                 <div class="mb-2 text-4xl leading-none" aria-label="{{ $fileItem->name }}">

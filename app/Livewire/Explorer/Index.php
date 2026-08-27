@@ -5,6 +5,7 @@ namespace App\Livewire\Explorer;
 use App\Models\File;
 use App\Models\Folder;
 use Flux\Flux;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -25,6 +26,15 @@ class Index extends Component
     public $renameName;
     public ?int $targetFolderId = null;
     public bool $folderUploading = false;
+
+    // Archivos de sistema a ignorar durante la subida de carpetas
+    protected array $ignoredFiles = [
+        '.ds_store',
+        'thumbs.db',
+        'desktop.ini',
+        '.gitignore',
+        '.gitkeep',
+    ];
 
     public function mount(?Folder $folder = null)
     {
@@ -124,100 +134,141 @@ class Index extends Component
 
     public function storeFolderUpload()
     {
-        $validated = $this->validate([
+        $this->validate([
             'uploadedFolderFiles' => ['required', 'array', 'min:1'],
             'uploadedFolderFiles.*' => ['file', 'max:512000'],
             'folderUploadPayload' => ['array'],
         ]);
 
-        $uploadedFiles = $validated['uploadedFolderFiles'];
-        $payload = $validated['folderUploadPayload'];
+        $uploadedFiles = $this->uploadedFolderFiles;
+        $payload = $this->folderUploadPayload;
+        
         $savedCount = 0;
+        $skippedCount = 0;
+        $storedPhysicalFiles = [];
 
-        foreach ($uploadedFiles as $index => $uploadedFile) {
-            $relativePath = trim((string) ($payload[$index]['relativePath'] ?? $uploadedFile->getClientOriginalName()));
-            $relativePath = str_replace('\\', '/', $relativePath);
-            $relativePath = preg_replace('#/+#', '/', $relativePath);
+        // Caché en memoria para evitar consultas SQL repetitivas de carpetas
+        $folderCache = [];
+        $rootFolderId = $this->folder?->id;
 
-            if ($relativePath === '') {
-                continue;
-            }
+        try {
+            DB::transaction(function () use ($uploadedFiles, $payload, $rootFolderId, &$savedCount, &$skippedCount, &$storedPhysicalFiles, &$folderCache) {
+                foreach ($uploadedFiles as $index => $uploadedFile) {
+                    $rawPath = trim((string) ($payload[$index]['relativePath'] ?? $uploadedFile->getClientOriginalName()));
+                    $normalizedPath = str_replace('\\', '/', $rawPath);
+                    $normalizedPath = preg_replace('#/+#', '/', $normalizedPath);
 
-            $segments = array_values(array_filter(explode('/', $relativePath), fn ($segment) => trim((string) $segment) !== ''));
+                    if ($normalizedPath === '') {
+                        continue;
+                    }
 
-            if ($segments === []) {
-                continue;
-            }
+                    $segments = array_values(array_filter(
+                        explode('/', $normalizedPath),
+                        fn ($seg) => trim((string) $seg) !== '' && $seg !== '.' && $seg !== '..'
+                    ));
 
-            $fileName = array_pop($segments);
-            $relativeFileName = trim((string) $fileName);
+                    if (empty($segments)) {
+                        continue;
+                    }
 
-            if ($relativeFileName === '') {
-                continue;
-            }
+                    $fileName = array_pop($segments);
+                    $relativeFileName = trim((string) $fileName);
 
-            $targetFolderId = $this->folder?->id;
+                    if ($relativeFileName === '' || in_array(mb_strtolower($relativeFileName), $this->ignoredFiles, true)) {
+                        continue;
+                    }
 
-            foreach ($segments as $folderName) {
-                $folderName = trim((string) $folderName);
+                    // Resolver o crear carpetas usando caché en memoria
+                    $currentParentId = $rootFolderId;
 
-                if ($folderName === '') {
-                    continue;
-                }
+                    foreach ($segments as $segmentName) {
+                        $folderName = trim((string) $segmentName);
+                        if ($folderName === '') {
+                            continue;
+                        }
 
-                $folder = Folder::where('parent_id', $targetFolderId)
-                    ->whereRaw('LOWER(name) = ?', [mb_strtolower($folderName)])
-                    ->first();
+                        $cacheKey = ($currentParentId ?? 'root') . ':' . mb_strtolower($folderName);
 
-                if (! $folder) {
-                    $folder = Folder::create([
-                        'parent_id' => $targetFolderId,
-                        'name' => $folderName,
+                        if (isset($folderCache[$cacheKey])) {
+                            $targetFolder = $folderCache[$cacheKey];
+                        } else {
+                            $targetFolder = Folder::where('parent_id', $currentParentId)
+                                ->whereRaw('LOWER(name) = ?', [mb_strtolower($folderName)])
+                                ->first();
+
+                            if (! $targetFolder) {
+                                $targetFolder = Folder::create([
+                                    'parent_id' => $currentParentId,
+                                    'name' => $folderName,
+                                ]);
+                            }
+
+                            $folderCache[$cacheKey] = $targetFolder;
+                        }
+
+                        $currentParentId = $targetFolder->id;
+                    }
+
+                    $exists = File::where('folder_id', $currentParentId)
+                        ->whereRaw('LOWER(name) = ?', [mb_strtolower($relativeFileName)])
+                        ->exists();
+
+                    if ($exists) {
+                        $skippedCount++;
+                        continue;
+                    }
+
+                    $extension = $uploadedFile->getClientOriginalExtension();
+                    $mimeType = $uploadedFile->getMimeType() ?? 'application/octet-stream';
+                    $size = $uploadedFile->getSize() ?? 0;
+                    $physicalName = bin2hex(random_bytes(16));
+
+                    if ($extension !== '') {
+                        $physicalName .= '.' . $extension;
+                    }
+
+                    $uploadedFile->storeAs('files', $physicalName, 'public');
+                    $storedPhysicalFiles[] = $physicalName;
+
+                    File::create([
+                        'folder_id' => $currentParentId,
+                        'name' => $relativeFileName,
+                        'physical_name' => $physicalName,
+                        'extension' => strtolower($extension),
+                        'mime_type' => $mimeType,
+                        'size' => $size,
                     ]);
+
+                    $savedCount++;
                 }
-
-                $targetFolderId = $folder->id;
+            });
+        } catch (\Throwable $e) {
+            foreach ($storedPhysicalFiles as $physicalFile) {
+                Storage::disk('public')->delete('files/' . $physicalFile);
             }
 
-            $exists = File::where('folder_id', $targetFolderId)
-                ->whereRaw('LOWER(name) = ?', [mb_strtolower($relativeFileName)])
-                ->exists();
-
-            if ($exists) {
-                continue;
-            }
-
-            $extension = $uploadedFile->getClientOriginalExtension();
-            $mimeType = $uploadedFile->getMimeType();
-            $size = $uploadedFile->getSize();
-            $physicalName = bin2hex(random_bytes(16));
-
-            if ($extension !== '') {
-                $physicalName .= '.'.$extension;
-            }
-
-            $uploadedFile->storeAs('files', $physicalName, 'public');
-
-            File::create([
-                'folder_id' => $targetFolderId,
-                'name' => $relativeFileName,
-                'physical_name' => $physicalName,
-                'extension' => $extension,
-                'mime_type' => $mimeType,
-                'size' => $size,
-            ]);
-
-            $savedCount++;
+            $this->reset(['uploadedFolderFiles', 'folderUploadPayload', 'folderUploading']);
+            
+            Flux::toast(variant: 'danger', text: 'Ocurrió un error al procesar la carpeta: ' . $e->getMessage());
+            return;
         }
 
-        $this->reset(['uploadedFolderFiles', 'folderUploadPayload']);
+        $this->reset(['uploadedFolderFiles', 'folderUploadPayload', 'folderUploading']);
 
-        Flux::toast(
-            variant: 'success',
-            text: $savedCount > 0
-                ? 'Carpeta y archivos subidos correctamente.'
-                : 'No se subió ningún archivo porque ya existían en esta ubicación.'
-        );
+        if ($savedCount > 0) {
+            $msg = "Se subieron {$savedCount} archivos correctamente.";
+            if ($skippedCount > 0) {
+                $msg .= " ({$skippedCount} omitidos por ya existir).";
+            }
+            Flux::toast(variant: 'success', text: $msg);
+        } else {
+            Flux::toast(
+                variant: 'warning',
+                text: $skippedCount > 0 
+                    ? "No se subieron archivos porque todos ({$skippedCount}) ya existían en el destino."
+                    : 'No se encontraron archivos válidos para subir.'
+            );
+        }
 
         if ($this->folder) {
             $this->redirectRoute('folder.show', ['folder' => $this->folder->id], navigate: true);
@@ -514,7 +565,7 @@ class Index extends Component
             ? $folder->files()->orderBy('name')->get()
             : File::whereNull('folder_id')->orderBy('name')->get();
 
-        $filesCount = File::all()->count();
+        $filesCount = File::count();
 
         return view('livewire.explorer.index', compact('folder', 'folders', 'files', 'filesCount'));
     }

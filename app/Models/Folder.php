@@ -43,4 +43,21 @@ class Folder extends Model implements Auditable
     {
         return $this->hasMany(File::class, 'folder_id');
     }
+
+    /**
+     * Obtiene la ruta jerárquica legible de la carpeta (ej. "Documentos / 2024 / Reportes").
+     */
+    public function getFullPathAttribute(): string
+    {
+        $path = [$this->name];
+        $current = $this->parent;
+
+        while ($current) {
+            array_unshift($path, $current->name);
+            $current = $current->parent;
+        }
+
+        return implode(' / ', $path);
+    }
 }
+
